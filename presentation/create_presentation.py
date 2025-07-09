@@ -49,7 +49,7 @@ def create_title_slide(prs):
     title.text_frame.paragraphs[0].font.size = Pt(44)
     title.text_frame.paragraphs[0].font.bold = True
     title.text_frame.paragraphs[0].font.color.rgb = RGBColor(0, 51, 102)
-    
+
     # Add flowchart below the subtitle
     add_flowchart(slide, Inches(2), Inches(4.5), Inches(12), Inches(2))
 
