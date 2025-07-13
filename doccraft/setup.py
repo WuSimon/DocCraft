@@ -41,10 +41,12 @@ setup(
         
         # PDF processing
         "PyMuPDF>=1.18.0",
-        "pdf2image>=1.16.0",
+        "pdfplumber>=0.7.0",
         
         # OCR
         "pytesseract>=0.3.8",
+        "paddlepaddle>=2.4.0",
+        "paddleocr>=2.6.0",
         
         # Image processing
         "opencv-python>=4.5.0",
@@ -52,9 +54,8 @@ setup(
         # Data processing
         "pandas>=1.3.0",
         
-        # Testing
-        "pytest>=6.0.0",
-        "pytest-cov>=2.0.0",
+        # Benchmarking
+        "psutil>=5.8.0",
     ],
     extras_require={
         "dev": [
@@ -62,16 +63,23 @@ setup(
             "flake8>=3.8.0",
             "mypy>=0.800",
             "pre-commit>=2.15.0",
+            "pytest>=6.0.0",
+            "pytest-cov>=2.0.0",
         ],
         "ai": [
-            "transformers>=4.0.0",
-            "torch>=1.9.0",
-            "torchvision>=0.10.0",
+            "transformers>=4.30.0",
+            "torch>=2.0.0",
+            "torchvision>=0.15.0",
+            "accelerate>=0.20.0",
         ],
         "benchmarking": [
             "matplotlib>=3.3.0",
             "seaborn>=0.11.0",
             "plotly>=5.0.0",
+        ],
+        "docvqa": [
+            "Levenshtein>=0.12.0",
+            "munkres>=1.1.4",
         ],
     },
     entry_points={

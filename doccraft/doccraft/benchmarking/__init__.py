@@ -7,4 +7,18 @@ Contains tools for performance evaluation:
 - Performance reporting and visualization
 """
 
-__all__ = [] 
+# Import the base benchmarker class
+from .base_benchmarker import BaseBenchmarker
+
+# Import specific benchmarker implementations
+from .performance_benchmarker import PerformanceBenchmarker
+from .accuracy_benchmarker import AccuracyBenchmarker
+from .docvqa_benchmarker import DocVQABenchmarker
+
+# Define what gets imported when someone does "from doccraft.benchmarking import *"
+__all__ = [
+    'BaseBenchmarker',
+    'PerformanceBenchmarker',
+    'AccuracyBenchmarker',
+    'DocVQABenchmarker',
+] 

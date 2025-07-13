@@ -1,5 +1,6 @@
 # macOS system files
 .DS_Store
+**/.DS_Store
 .AppleDouble
 .LSOverride
 Icon
@@ -43,3 +44,84 @@ ENV/
 *.pptx
 *.key
 *.ppt 
+
+# DocCraft-specific ignores
+
+# Test assets and outputs
+/doccraft/tests/test_files/
+/doccraft/.pytest_cache/
+/doccraft/processed_table.*
+/doccraft/demo_*.py
+/doccraft/test_*.py
+/doccraft/example_docvqa_usage.py
+
+# Build and metadata
+/doccraft/doccraft.egg-info/
+
+# Python bytecode
+/doccraft/__pycache__/
+/doccraft/doccraft/__pycache__/
+/doccraft/doccraft/benchmarking/__pycache__/
+/doccraft/doccraft/parsers/__pycache__/
+/doccraft/doccraft/postprocessing/__pycache__/
+/doccraft/doccraft/preprocessing/__pycache__/
+/doccraft/tests/__pycache__/
+
+# Large datasets and model files
+tests/data/
+data/
+
+# DeepSeek-VL model files and cache
+doccraft/DeepSeek-VL/deepseek_vl.egg-info/
+doccraft/DeepSeek-VL/__pycache__/
+doccraft/DeepSeek-VL/deepseek_vl/__pycache__/
+doccraft/DeepSeek-VL/deepseek_vl/models/__pycache__/
+doccraft/DeepSeek-VL/deepseek_vl/serve/__pycache__/
+doccraft/DeepSeek-VL/deepseek_vl/utils/__pycache__/
+
+# Results and predictions (can be regenerated)
+results/
+results_first_100_questions.csv
+*.json
+*.csv
+
+# Model cache and downloads
+.cache/
+models/
+checkpoints/
+*.bin
+*.safetensors
+*.ckpt
+*.pth
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.out
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Large image files
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+
+# Large document files
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini 

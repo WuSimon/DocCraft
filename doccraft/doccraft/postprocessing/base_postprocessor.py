@@ -13,8 +13,10 @@ class BasePostprocessor(ABC):
     
     All postprocessors must implement the process() method.
     """
-    def __init__(self, name: str):
+    def __init__(self, name: str, version: str, supported_formats: list):
         self.name = name
+        self.version = version
+        self.supported_formats = supported_formats
     
     @abstractmethod
     def process(self, data: Any, **kwargs) -> Any:
@@ -32,4 +34,9 @@ class BasePostprocessor(ABC):
         """
         Return information about this postprocessor.
         """
-        return {"name": self.name, "type": self.__class__.__name__} 
+        return {
+            "name": self.name,
+            "version": self.version,
+            "supported_formats": self.supported_formats,
+            "type": self.__class__.__name__
+        } 

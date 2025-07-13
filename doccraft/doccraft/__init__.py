@@ -18,4 +18,22 @@ __all__ = [
     "__version__",
     "__author__",
     "__email__",
+    # Parser classes
+    "BaseParser",
+    "PDFParser", 
+    "PDFPlumberParser",
+    "OCRParser",
+    "PaddleOCRParser",
+    # Preprocessor classes
+    "BasePreprocessor",
+    "ImagePreprocessor",
+    "PDFPreprocessor",
+    # Postprocessor classes
+    "BasePostprocessor", 
+    "TextPostprocessor",
+    "TablePostprocessor",
+    # Benchmarker classes
+    "BaseBenchmarker",
+    "PerformanceBenchmarker",
+    "AccuracyBenchmarker",
 ] 
