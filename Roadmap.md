@@ -157,61 +157,22 @@
 - ✅ The API exposes a simple way to build and run pipelines, allowing users to select and configure modules via code or config.
 - ✅ All modules and options are documented for discoverability and ease of use.
 
-## Project File Structure (as of 2025-07-13)
+## File Structure (src-layout)
 
 ```
 DocCraft/
-├── doccraft/
-│   ├── __init__.py
-│   ├── setup.py ✅ Updated for distribution
-│   ├── requirements.txt ✅ Updated with AI dependencies
-│   ├── README.md
-│   ├── LICENSE ✅ Added
-│   ├── MANIFEST.in ✅ Added
-│   ├── doccraft/
-│   │   ├── __init__.py
-│   │   ├── parsers/ ✅ COMPLETE
-│   │   │   ├── __init__.py
-│   │   │   ├── base_parser.py
-│   │   │   ├── pdf_parser.py (PyMuPDF)
-│   │   │   ├── pdfplumber_parser.py
-│   │   │   ├── ocr_parser.py (Tesseract)
-│   │   │   ├── paddle_ocr_parser.py
-│   │   │   ├── base_ai_parser.py ✅ NEW
-│   │   │   ├── layoutlmv3_parser.py ✅ NEW
-│   │   │   └── deepseek_vl_parser.py ✅ NEW
-│   │   ├── preprocessing/ ✅ COMPLETE
-│   │   │   ├── __init__.py
-│   │   │   ├── base_preprocessor.py
-│   │   │   ├── image_preprocessor.py
-│   │   │   └── pdf_preprocessor.py
-│   │   ├── postprocessing/ ✅ COMPLETE
-│   │   │   ├── __init__.py
-│   │   │   ├── base_postprocessor.py
-│   │   │   ├── text_postprocessor.py
-│   │   │   └── table_postprocessor.py
-│   │   └── benchmarking/ ✅ COMPLETE
-│   │       ├── __init__.py
-│   │       ├── base_benchmarker.py
-│   │       ├── performance_benchmarker.py
-│   │       └── accuracy_benchmarker.py
-│   ├── tests/ ✅ COMPLETE
-│   │   ├── __init__.py
-│   │   ├── test_pdf_parser.py
-│   │   ├── test_ocr_parser.py
-│   │   ├── test_package_structure.py
-│   │   └── test_files/
-│   │       ├── dummy.pdf
-│   │       ├── lenna.png
-│   │       ├── benchmark.tif
-│   │       └── download_test_assets.py
-│   ├── demo_*.py ✅ COMPLETE
-│   ├── docvqa_*.py ✅ NEW - DocVQA integration
-│   ├── DOCVQA_INTEGRATION.md ✅ NEW
-│   ├── test_docvqa_integration.py ✅ NEW
-│   └── test_ai_parsers.py ✅ NEW - AI parser testing
-├── Roadmap.md
-└── .gitignore ✅ Updated for distribution
+  src/
+    doccraft/
+      __init__.py
+      cli.py
+      benchmarking/
+      parsers/
+      postprocessing/
+      preprocessing/
+      ...
+  setup.py
+  requirements.txt
+  ...
 ```
 
 ## Current Status Summary
