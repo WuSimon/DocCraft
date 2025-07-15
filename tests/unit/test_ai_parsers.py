@@ -12,6 +12,7 @@ import time
 import logging
 from pathlib import Path
 from typing import Dict, Any
+import pytest
 
 # Add the project root to the path
 project_root = Path(__file__).parent
@@ -72,6 +73,12 @@ def test_parser_initialization():
         logger.error(f"DeepSeek-VL initialization error: {e}")
     
     return parsers
+
+
+@pytest.fixture(scope="module")
+def parsers():
+    """Pytest fixture for initializing AI parsers."""
+    return test_parser_initialization()
 
 
 def test_basic_text_extraction(parsers: Dict[str, Any]):

@@ -11,6 +11,9 @@ import argparse
 import re
 from typing import Dict, List, Any
 from difflib import SequenceMatcher
+from num2words import num2words
+import inflect
+p = inflect.engine()
 
 
 def normalize_text(text: str) -> str:
@@ -28,6 +31,36 @@ def normalize_text(text: str) -> str:
     text = re.sub(r'[^\w\s]', '', text)
     
     return text
+
+def get_normalized_forms(text: str) -> set:
+    """Return a set of normalized forms, including numeric and written forms if applicable."""
+    forms = set()
+    norm = normalize_text(text)
+    forms.add(norm)
+    # Try to add numeric <-> word forms
+    # If norm is a number, add its word form
+    try:
+        # Remove commas for thousands
+        num = float(norm.replace(",", ""))
+        # Integer or float
+        if num.is_integer():
+            word = num2words(int(num))
+        else:
+            word = num2words(num)
+        forms.add(normalize_text(word))
+    except Exception:
+        pass
+    # If norm is a word, try to parse as number
+    try:
+        # inflect can parse written numbers to numeric
+        num = p.number_to_words(norm)
+        if num != norm:
+            # Try to parse the result as a number
+            num_val = float(num.replace(",", ""))
+            forms.add(normalize_text(str(int(num_val)) if num_val.is_integer() else str(num_val)))
+    except Exception:
+        pass
+    return forms
 
 
 def calculate_similarity(str1: str, str2: str) -> float:
@@ -74,7 +107,10 @@ def evaluate_predictions(ground_truth_path: str, predictions_path: str) -> Dict[
         'low_similarity': 0,
         'no_match': 0,
         'average_similarity': 0.0,
-        'question_details': []
+        'question_details': [],
+        'matches_total': 0,
+        'best_matches': [],
+        'worst_matches': [],
     }
     
     total_similarity = 0.0
@@ -92,20 +128,19 @@ def evaluate_predictions(ground_truth_path: str, predictions_path: str) -> Dict[
         gt_answer = gt_item.get('answers', [''])[0] if gt_item.get('answers') else ''
         pred_answer = pred_item.get('predicted_answer', '')
         
-        # Normalize answers
+        # Enhanced normalization: numeric and written forms
+        gt_forms = get_normalized_forms(gt_answer)
+        pred_forms = get_normalized_forms(pred_answer)
+        # Calculate similarity using the main normalized form
         gt_normalized = normalize_text(gt_answer)
         pred_normalized = normalize_text(pred_answer)
-        
-        # Calculate similarity
         similarity = calculate_similarity(gt_normalized, pred_normalized)
         total_similarity += similarity
-        
         # Categorize results
         if gt_answer == pred_answer:
             results['exact_matches'] += 1
-        elif gt_normalized == pred_normalized:
+        elif gt_forms & pred_forms:
             results['normalized_matches'] += 1
-        
         if similarity >= 0.8:
             results['high_similarity'] += 1
         elif similarity >= 0.5:
@@ -114,7 +149,6 @@ def evaluate_predictions(ground_truth_path: str, predictions_path: str) -> Dict[
             results['low_similarity'] += 1
         else:
             results['no_match'] += 1
-        
         # Store details
         results['question_details'].append({
             'question_id': question_id,
@@ -123,9 +157,8 @@ def evaluate_predictions(ground_truth_path: str, predictions_path: str) -> Dict[
             'predicted': pred_answer,
             'similarity': similarity,
             'exact_match': gt_answer == pred_answer,
-            'normalized_match': gt_normalized == pred_normalized
+            'normalized_match': bool(gt_forms & pred_forms)
         })
-        
         results['evaluated_questions'] += 1
     
     # Calculate average similarity
@@ -141,6 +174,12 @@ def evaluate_predictions(ground_truth_path: str, predictions_path: str) -> Dict[
         results['medium_similarity_rate'] = results['medium_similarity'] / total
         results['low_similarity_rate'] = results['low_similarity'] / total
         results['no_match_rate'] = results['no_match'] / total
+        results['matches_total'] = results['exact_matches'] + results['normalized_matches']
+    
+    # Sort question_details for best/worst matches
+    results['question_details'].sort(key=lambda x: x['similarity'], reverse=True)
+    results['best_matches'] = results['question_details'][:5]
+    results['worst_matches'] = results['question_details'][-5:]
     
     return results
 
@@ -159,6 +198,7 @@ def print_results(results: Dict[str, Any]):
     print("MATCHING RESULTS:")
     print(f"  Exact Matches: {results['exact_matches']} ({results.get('exact_match_rate', 0):.1%})")
     print(f"  Normalized Matches: {results['normalized_matches']} ({results.get('normalized_match_rate', 0):.1%})")
+    print(f"  Matches Total (Exact + Normalized): {results['matches_total']} ({(results['matches_total']/results['total_questions']):.1%})")
     print()
     
     print("SIMILARITY BREAKDOWN:")

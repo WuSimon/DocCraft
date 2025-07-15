@@ -15,6 +15,7 @@ import os
 import warnings
 from typing import Dict, List, Any, Optional
 from pathlib import Path
+import time
 
 # Suppress warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -31,7 +32,7 @@ os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 try:
     from doccraft.parsers import (
         PaddleOCRParser, PDFPlumberParser, 
-        LayoutLMv3Parser, DeepSeekVLParser
+        LayoutLMv3Parser, DeepSeekVLParser, QwenVLParser
     )
 except ImportError:
     print("Warning: DocCraft not installed. Using fallback imports.")
@@ -46,6 +47,7 @@ except ImportError:
     PDFPlumberParser = lambda: MockParser("pdfplumber")
     LayoutLMv3Parser = lambda: MockParser("layoutlmv3")
     DeepSeekVLParser = lambda: MockParser("deepseekvl")
+    QwenVLParser = lambda: MockParser("qwenvl")
 
 
 class DocVQATask1Benchmarker:
@@ -59,12 +61,14 @@ class DocVQATask1Benchmarker:
     """
     
     def __init__(self):
-        self.parsers = {
-            'paddleocr': PaddleOCRParser(),
-            'pdfplumber': PDFPlumberParser(),
-            'layoutlmv3': LayoutLMv3Parser(),
-            'deepseekvl': DeepSeekVLParser()
+        self.parser_classes = {
+            'paddleocr': PaddleOCRParser,
+            'pdfplumber': PDFPlumberParser,
+            'layoutlmv3': LayoutLMv3Parser,
+            'deepseekvl': DeepSeekVLParser,
+            'qwenvl': lambda: QwenVLParser(device_mode='cpu'),
         }
+        self.parsers = {}
     
     def load_ground_truth(self, gt_path: str) -> Dict[str, Any]:
         """Load Task 1 ground truth file."""
@@ -73,8 +77,10 @@ class DocVQATask1Benchmarker:
     
     def get_parser(self, parser_name: str):
         """Get parser by name."""
+        if parser_name not in self.parser_classes:
+            raise ValueError(f"Unknown parser: {parser_name}. Available: {list(self.parser_classes.keys())}")
         if parser_name not in self.parsers:
-            raise ValueError(f"Unknown parser: {parser_name}. Available: {list(self.parsers.keys())}")
+            self.parsers[parser_name] = self.parser_classes[parser_name]()
         return self.parsers[parser_name]
     
     def extract_text_from_document(self, parser, image_path: str, documents_dir: str) -> str:
@@ -176,9 +182,11 @@ class DocVQATask1Benchmarker:
             'answers': []
         }
         
+        start_time = time.time()
         for i, qa_item in enumerate(questions):
             if i % 10 == 0:
-                print(f"Processing question {i+1}/{len(questions)}")
+                elapsed = time.time() - start_time
+                print(f"Processing question {i+1}/{len(questions)} (Elapsed: {elapsed:.1f} seconds)")
             
             question_id = qa_item['questionId']
             question = qa_item['question']
@@ -252,7 +260,7 @@ class DocVQATask1Benchmarker:
             'parsers': {}
         }
         
-        for parser_name in self.parsers.keys():
+        for parser_name in self.parser_classes.keys():
             try:
                 results = self.benchmark_parser(
                     ground_truth_path, documents_dir, parser_name, max_questions
@@ -298,10 +306,11 @@ class DocVQATask1Benchmarker:
         parser = self.get_parser(parser_name)
         
         predictions = []
-        
+        start_time = time.time()
         for i, qa_item in enumerate(questions):
             if i % 10 == 0:
-                print(f"Processing question {i+1}/{len(questions)}")
+                elapsed = time.time() - start_time
+                print(f"Processing question {i+1}/{len(questions)} (Elapsed: {elapsed:.1f} seconds)")
             
             question_id = qa_item['questionId']
             question = qa_item['question']
@@ -347,11 +356,18 @@ class DocVQATask1Benchmarker:
                 'extracted_text': extracted_text
             })
         
+        elapsed_time = time.time() - start_time
+        output_data = {
+            'parser': parser_name,
+            'total_questions': len(questions),
+            'elapsed_time_seconds': elapsed_time,
+            'predictions': predictions
+        }
         # Save predictions
         with open(output_path, 'w') as f:
-            json.dump(predictions, f, indent=2)
+            json.dump(output_data, f, indent=2)
         
-        print(f"✓ Predictions saved to: {output_path}")
+        print(f"\u2713 Predictions saved to: {output_path}")
 
 
 def main():
@@ -366,8 +382,6 @@ def main():
                        help="Benchmark all available parsers")
     parser.add_argument('--output', '-o', default='task1_benchmark_results.json',
                        help="Output file for results (default: task1_benchmark_results.json)")
-    parser.add_argument('--generate_predictions', action='store_true',
-                       help="Generate predictions file instead of full benchmark")
     parser.add_argument('--max_questions', type=int,
                        help="Maximum number of questions to process (for testing)")
     
@@ -385,25 +399,14 @@ def main():
     # Create benchmarker
     benchmarker = DocVQATask1Benchmarker()
     
-    if args.generate_predictions:
-        # Generate predictions file
-        predictions_file = f"{args.parser}_task1_predictions.json"
-        benchmarker.generate_predictions_file(
-            args.ground_truth, args.documents, args.parser, predictions_file, args.max_questions
-        )
-    elif args.all_parsers:
-        # Benchmark all parsers
-        results = benchmarker.benchmark_all_parsers(
-            args.ground_truth, args.documents, args.max_questions
-        )
-        benchmarker.save_results(results, args.output)
+    if args.all_parsers:
+        print("Warning: --all_parsers is not supported with flat predictions output. Please run individual parsers.")
+        return
     else:
-        # Benchmark single parser
-        results = benchmarker.benchmark_parser(
-            args.ground_truth, args.documents, args.parser, args.max_questions
+        # Always generate flat, evaluation-compatible predictions file
+        benchmarker.generate_predictions_file(
+            args.ground_truth, args.documents, args.parser, args.output, args.max_questions
         )
-        benchmarker.save_results(results, args.output)
-
 
 if __name__ == "__main__":
     main() 

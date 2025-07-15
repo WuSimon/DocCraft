@@ -4,42 +4,27 @@ Convert predictions format for evaluation.
 """
 
 import json
-import argparse
+import sys
 
-def convert_predictions_format(input_path: str, output_path: str):
-    """Convert predictions from wrapped format to simple array format."""
-    
-    # Load the wrapped predictions
-    with open(input_path, 'r') as f:
-        data = json.load(f)
-    
-    # Extract just the answers array and fix field names
-    predictions = []
-    for pred in data['answers']:
-        # Create new prediction with correct field names
-        new_pred = {
-            'questionId': pred['question_id'],  # Rename field
-            'question': pred['question'],
-            'image': pred['image'],
-            'predicted_answer': pred['predicted_answer'],
-            'confidence': pred['confidence'],
-            'extracted_text': pred.get('extracted_text', '')
-        }
-        predictions.append(new_pred)
-    
-    # Save in the expected format (simple array)
-    with open(output_path, 'w') as f:
-        json.dump(predictions, f, indent=2)
-    
-    print(f"Converted {len(predictions)} predictions from {input_path} to {output_path}")
+if len(sys.argv) != 3:
+    print("Usage: python convert_predictions_format.py <input_file> <output_file>")
+    sys.exit(1)
 
-def main():
-    parser = argparse.ArgumentParser(description="Convert predictions format")
-    parser.add_argument('--input', '-i', required=True, help="Input predictions file")
-    parser.add_argument('--output', '-o', required=True, help="Output predictions file")
-    
-    args = parser.parse_args()
-    convert_predictions_format(args.input, args.output)
+input_file = sys.argv[1]
+output_file = sys.argv[2]
 
-if __name__ == "__main__":
-    main() 
+with open(input_file, 'r') as f:
+    data = json.load(f)
+
+# Extract and reformat answers
+flat_answers = []
+for entry in data.get('answers', []):
+    flat_answers.append({
+        'questionId': entry['question_id'],
+        'predicted_answer': entry['predicted_answer']
+    })
+
+with open(output_file, 'w') as f:
+    json.dump(flat_answers, f, indent=2)
+
+print(f"Converted predictions saved to: {output_file}") 

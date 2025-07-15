@@ -125,3 +125,44 @@ checkpoints/
 Thumbs.db
 ehthumbs.db
 Desktop.ini 
+
+# Ignore model weights and large data files
+*.dat
+*.pth
+*.pt
+*.h5
+*.ckpt
+*.onnx
+*.npz
+*.npy
+*.pb
+*.tar.gz
+*.zip
+*.tar
+*.bin
+*.safetensors
+
+# Ignore model and cache directories
+__pycache__/
+.cache/
+.huggingface/
+venv/
+.env/
+
+# Ignore results and offload/model data folders
+results/
+qwen_offload/
+src/doccraft/DeepSeek-VL/deepseek_vl.egg-info/
+src/doccraft/DeepSeek-VL/images/
+
+# Ignore test and data artifacts
+*.log
+*.tmp
+*.out
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.tiff
+*.bmp
+*.gif 
