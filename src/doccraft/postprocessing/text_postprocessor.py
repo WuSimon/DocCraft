@@ -52,7 +52,7 @@ class TextPostprocessor(BasePostprocessor):
                 - fix_line_breaks (bool): Fix inconsistent line breaks
                 - remove_special_chars (bool): Remove special characters
                 - normalize_quotes (bool): Normalize quote characters
-                - fix_common_ocr_errors (bool): Fix common OCR mistakes
+                - fix_common_ocr_errors (bool): Fix common OCR mistakes (e.g., for Tesseract or PaddleOCR)
                 - extract_paragraphs (bool): Extract structured paragraphs
                 - output_format (str): Output format ('text', 'json', 'csv')
                 
@@ -201,7 +201,7 @@ class TextPostprocessor(BasePostprocessor):
     
     def _fix_common_ocr_errors(self, text: str) -> str:
         """
-        Fix common OCR errors and typos.
+        Fix common OCR errors and typos (e.g., for Tesseract or PaddleOCR).
         
         Args:
             text (str): Input text
@@ -209,7 +209,7 @@ class TextPostprocessor(BasePostprocessor):
         Returns:
             str: Text with common OCR errors fixed
         """
-        # Common OCR replacements
+        # Common OCR replacements (for Tesseract/PaddleOCR)
         replacements = {
             '0': 'O',  # Zero to O (context-dependent)
             '1': 'l',  # One to lowercase L (context-dependent)
@@ -360,10 +360,10 @@ class TextPostprocessor(BasePostprocessor):
     
     def clean_for_ocr(self, text: str, **kwargs) -> tuple[str, Dict[str, Any]]:
         """
-        Apply OCR-specific text cleaning.
+        Apply OCR-specific text cleaning (for Tesseract/PaddleOCR).
         
         This method applies a specific set of cleaning techniques that are
-        particularly beneficial for OCR-extracted text.
+        particularly beneficial for OCR-extracted text (e.g., from Tesseract or PaddleOCR).
         
         Args:
             text (str): Input text
@@ -372,11 +372,11 @@ class TextPostprocessor(BasePostprocessor):
         Returns:
             tuple[str, Dict[str, Any]]: (cleaned_text, metadata)
         """
-        # Set default OCR-optimized parameters
+        # Set default OCR-optimized parameters (for Tesseract/PaddleOCR)
         ocr_kwargs = {
             'remove_extra_whitespace': True,
             'fix_line_breaks': True,
-            'remove_special_chars': False,  # Keep special chars for OCR
+            'remove_special_chars': False,  # Keep special chars for OCR engines
             'normalize_quotes': True,
             'fix_common_ocr_errors': True,
             'extract_paragraphs': True,

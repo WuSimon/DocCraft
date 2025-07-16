@@ -17,7 +17,7 @@ from typing import Optional
 
 # Import DocCraft parsers
 from doccraft.parsers import (
-    PDFParser, PDFPlumberParser, OCRParser, PaddleOCRParser
+    PDFParser, PDFPlumberParser, TesseractParser, PaddleOCRParser
 )
 
 # Try to import AI parsers
@@ -56,11 +56,11 @@ def demo_layoutlmv3_parser(device: str = "auto"):
         print(f"✅ LayoutLMv3 parser initialized on {parser.device}")
         
         # Test with a sample document
-        test_file = "tests/test_files/dummy.pdf"
+        test_file = "tests/data/dummy.pdf"
         if not Path(test_file).exists():
             print(f"⚠️  Test file not found: {test_file}")
             print("   Using any available test file...")
-            test_files = list(Path("tests/test_files").glob("*"))
+            test_files = list(Path("tests/data").glob("*"))
             if test_files:
                 test_file = str(test_files[0])
             else:
@@ -135,11 +135,11 @@ def demo_qwen_vl_parser(device: str = "auto"):
         print(f"✅ Qwen-VL-Plus parser initialized on {parser.device}")
         
         # Test with a sample document
-        test_file = "tests/test_files/dummy.pdf"
+        test_file = "tests/data/dummy.pdf"
         if not Path(test_file).exists():
             print(f"⚠️  Test file not found: {test_file}")
             print("   Using any available test file...")
-            test_files = list(Path("tests/test_files").glob("*"))
+            test_files = list(Path("tests/data").glob("*"))
             if test_files:
                 test_file = str(test_files[0])
             else:
@@ -238,7 +238,7 @@ def compare_parsers(test_file: str, device: str = "auto"):
     
     # Traditional parsers
     traditional_parsers = {
-        'Tesseract': OCRParser(),
+        'Tesseract': TesseractParser(),
         'PaddleOCR': PaddleOCRParser(),
         'PyMuPDF': PDFParser(),
         'PDFPlumber': PDFPlumberParser()
@@ -316,7 +316,7 @@ def main():
     parser.add_argument('--device', choices=['cpu', 'cuda', 'mps', 'auto'], 
                        default='auto', help='Device to use for AI models')
     parser.add_argument('--test-file', type=str, 
-                       default='tests/test_files/dummy.pdf',
+                       default='tests/data/dummy.pdf',
                        help='Test file to use')
     
     args = parser.parse_args()

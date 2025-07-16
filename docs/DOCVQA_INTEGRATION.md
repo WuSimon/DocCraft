@@ -10,7 +10,7 @@ The DocVQA dataset is a benchmark for document understanding that tests how well
 3. **Rank evidence** that supports the answers
 
 By integrating DocCraft parsers with DocVQA, you can:
-- **Benchmark** different parsers (Tesseract, PaddleOCR, PyMuPDF, PDFPlumber)
+- **Benchmark** different parsers (Tesseract, PaddleOCR, PyMuPDF, PDFPlumber, LayoutLMv3, Qwen-VL, DeepSeek-VL, etc.)
 - **Compare** their performance on real document understanding tasks
 - **Evaluate** text extraction quality using standardized metrics
 
@@ -38,24 +38,26 @@ First, ensure you have the DocVQA dataset:
 - Install required dependencies:
 
 ```bash
-pip install numpy Levenshtein munkres
+pip install "doccraft[ai]"
 ```
+
+For advanced AI features, see the main README for [AI and DeepSeek-VL installation instructions](../README.md#optional-dependencies).
 
 ### 2. Basic Usage
 
 #### Benchmark All Parsers
 ```bash
-python docvqa_benchmark.py -g path/to/gt.json -d path/to/documents
+doccraft benchmark -g path/to/gt.json -d path/to/documents -a
 ```
 
 #### Benchmark Specific Parser
 ```bash
-python docvqa_benchmark.py -g path/to/gt.json -d path/to/documents -p tesseract
+doccraft benchmark -g path/to/gt.json -d path/to/documents -p tesseract
 ```
 
 #### Generate Predictions Only
 ```bash
-python docvqa_evaluation.py -g path/to/gt.json -d path/to/documents -p paddleocr -o predictions.json
+doccraft benchmark -g path/to/gt.json -d path/to/documents -p tesseract --max_questions 10
 ```
 
 ### 3. Using the Original Evaluation Script
@@ -64,42 +66,36 @@ If you want to use the original DocVQA evaluation script:
 
 ```bash
 # Generate predictions with DocCraft
-python docvqa_evaluation.py -g gt.json -d documents/ -p tesseract -o predictions.json
+doccraft benchmark -g gt.json -d documents/ -p tesseract
 
-# Run original evaluation
-python evaluate.py -g gt.json -s predictions.json
+# The script automatically saves results to the results/ directory
 ```
 
 ## Scripts Overview
 
-### 1. `docvqa_benchmark.py`
-**Main benchmarking script** that compares all DocCraft parsers.
+### 1. `doccraft benchmark`
+**Main benchmarking command** that compares all DocCraft parsers.
 
 **Features:**
-- Benchmarks all available parsers (Tesseract, PaddleOCR, PyMuPDF, PDFPlumber)
-- Calculates MAP, ANLSL, and extraction time metrics
+- Benchmarks all available parsers (Tesseract, PaddleOCR, PDFPlumber, LayoutLMv3, Qwen-VL, DeepSeek-VL, etc.)
+- Calculates accuracy metrics and processing time
 - Provides detailed comparison tables
-- Saves results to JSON file
+- Saves results to `results/` directory with timestamps
+- Supports single parser or all parsers benchmarking
 
 **Usage:**
 ```bash
-python docvqa_benchmark.py -g gt.json -d documents/ -o results.json
+# Single parser
+doccraft benchmark -g gt.json -d documents/ -p tesseract
+
+# All parsers
+doccraft benchmark -g gt.json -d documents/ -a
+
+# Custom output directory
+doccraft benchmark -g gt.json -d documents/ -p qwenvl --output-dir my_results/
 ```
 
-### 2. `docvqa_evaluation.py`
-**Evaluation script** that generates predictions in DocVQA format.
-
-**Features:**
-- Generates predictions using any DocCraft parser
-- Formats output for the original DocVQA evaluation script
-- Can run evaluation automatically
-
-**Usage:**
-```bash
-python docvqa_evaluation.py -g gt.json -d documents/ -p tesseract --run_eval
-```
-
-### 3. `example_docvqa_usage.py`
+### 2. `examples/example_docvqa_usage.py`
 **Example script** showing basic usage patterns.
 
 **Features:**
@@ -141,15 +137,18 @@ Fastest: pymupdf (0.5432s)
 To add a new parser to the benchmarking:
 
 1. Create your parser class inheriting from `BaseParser`
-2. Add it to the parsers dictionary in the scripts:
+2. Add it to the parser registry in the benchmarking script:
 
 ```python
-self.parsers = {
-    'pymupdf': PDFParser(),
-    'pdfplumber': PDFPlumberParser(),
-    'tesseract': OCRParser(),
-    'paddleocr': PaddleOCRParser(),
-    'your_parser': YourParser()  # Add your parser here
+self.parser_classes = {
+    'pymupdf': PDFParser,
+    'pdfplumber': PDFPlumberParser,
+    'tesseract': OCRParser,
+    'paddleocr': PaddleOCRParser,
+    'layoutlmv3': LayoutLMv3Parser,
+    'qwenvl': QwenVLParser,
+    'deepseekvl': DeepSeekVLParser,
+    'your_parser': YourParser  # Add your parser here
 }
 ```
 
@@ -246,86 +245,4 @@ def ensemble_extraction(self, document_path: str) -> str:
     
     # Combine results (e.g., voting, averaging)
     return self.combine_texts(results)
-```
-
-### Custom Evaluation Metrics
-
-Add your own evaluation metrics:
-
-```python
-def custom_metrics(self, predictions, ground_truth):
-    # Calculate custom metrics
-    accuracy = self.calculate_accuracy(predictions, ground_truth)
-    f1_score = self.calculate_f1(predictions, ground_truth)
-    
-    return {
-        'custom_accuracy': accuracy,
-        'custom_f1': f1_score
-    }
-```
-
-## Integration with Existing Workflows
-
-### CI/CD Integration
-
-Add benchmarking to your CI pipeline:
-
-```yaml
-# .github/workflows/benchmark.yml
-name: DocVQA Benchmark
-on: [push, pull_request]
-
-jobs:
-  benchmark:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run benchmark
-        run: |
-          python docvqa_benchmark.py -g gt.json -d documents/ -o results.json
-      - name: Upload results
-        uses: actions/upload-artifact@v2
-        with:
-          name: benchmark-results
-          path: results.json
-```
-
-### Automated Reporting
-
-Generate automated reports:
-
-```python
-def generate_report(self, results: Dict[str, Any]) -> str:
-    """Generate HTML report from benchmark results."""
-    html = """
-    <html>
-    <head><title>DocVQA Benchmark Results</title></head>
-    <body>
-        <h1>DocVQA Benchmark Results</h1>
-        <table>
-            <tr><th>Parser</th><th>MAP</th><th>ANLSL</th><th>Time</th></tr>
-    """
-    
-    for parser_name, result in results.items():
-        html += f"""
-            <tr>
-                <td>{parser_name}</td>
-                <td>{result['mean_map']:.4f}</td>
-                <td>{result['mean_anlsl']:.4f}</td>
-                <td>{result['mean_extraction_time']:.4f}s</td>
-            </tr>
-        """
-    
-    html += "</table></body></html>"
-    return html
-```
-
-## Conclusion
-
-This integration allows you to:
-- **Systematically evaluate** your DocCraft parsers
-- **Compare performance** across different parsing approaches
-- **Identify strengths and weaknesses** of each parser
-- **Make data-driven decisions** about parser selection
-
-The benchmarking results will help you choose the best parser for your specific use case, balancing accuracy, speed, and resource requirements. 
+``` 

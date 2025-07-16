@@ -10,10 +10,9 @@ def test_package_import():
         print(f"✅ Package imported successfully!")
         print(f"   Version: {doccraft.__version__}")
         print(f"   Author: {doccraft.__author__}")
-        return True
     except ImportError as e:
         print(f"❌ Failed to import doccraft: {e}")
-        return False
+        assert False, f"Package import failed: {e}"
 
 def test_submodules_exist():
     """Test that all submodules exist."""
@@ -31,10 +30,9 @@ def test_submodules_exist():
         print("   - doccraft.preprocessing")
         print("   - doccraft.postprocessing")
         print("   - doccraft.benchmarking")
-        return True
     except Exception as e:
         print(f"❌ Submodule test failed: {e}")
-        return False
+        assert False, f"Submodule test failed: {e}"
 
 def test_package_metadata():
     """Test package metadata."""
@@ -51,10 +49,9 @@ def test_package_metadata():
         assert hasattr(doccraft, '__all__')
         
         print("✅ Package metadata is correct")
-        return True
     except Exception as e:
         print(f"❌ Metadata test failed: {e}")
-        return False
+        assert False, f"Metadata test failed: {e}"
 
 if __name__ == "__main__":
     print("🧪 Testing DocCraft package structure...\n")

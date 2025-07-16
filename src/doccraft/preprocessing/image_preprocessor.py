@@ -2,7 +2,7 @@
 Image preprocessing module.
 
 This module provides image preprocessing tools for enhancing
-document images before OCR processing.
+document images before OCR (e.g., Tesseract, PaddleOCR) processing.
 """
 
 try:
@@ -30,7 +30,7 @@ class ImagePreprocessor(BasePreprocessor):
     Image preprocessing for document enhancement.
     
     This preprocessor applies various image enhancement techniques
-    to improve OCR accuracy and document readability.
+    to improve OCR accuracy and document readability (e.g., for Tesseract or PaddleOCR).
     
     Attributes:
         name (str): Preprocessor name ('Image Preprocessor')
@@ -293,7 +293,7 @@ class ImagePreprocessor(BasePreprocessor):
         Apply OCR-optimized preprocessing to an image.
         
         This method applies a specific set of enhancements that are
-        particularly beneficial for OCR accuracy.
+        particularly beneficial for OCR accuracy (e.g., for Tesseract or PaddleOCR).
         
         Args:
             file_path (Union[str, Path]): Path to the input image file
@@ -302,12 +302,12 @@ class ImagePreprocessor(BasePreprocessor):
         Returns:
             tuple[Union[str, Path], Dict[str, Any]]: (output_path, metadata)
         """
-        # Set default OCR-optimized parameters
+        # Set default OCR-optimized parameters (for Tesseract/PaddleOCR)
         ocr_kwargs = {
             'deskew': True,
             'denoise': True,
             'enhance_contrast': True,
-            'binarize': False,  # Usually not needed for modern OCR
+            'binarize': False,  # Usually not needed for modern OCR engines
             'resize_factor': 1.0
         }
         

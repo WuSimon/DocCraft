@@ -12,33 +12,33 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-from doccraft.parsers import OCRParser, BaseParser
+from doccraft.parsers import TesseractParser, BaseParser
 
 
-class TestOCRParser:
-    """Test suite for the OCRParser class."""
+class TestTesseractParser:
+    """Test suite for the TesseractParser class."""
     
     def setup_method(self):
         """
         Set up test fixtures before each test method.
         
         This method runs before each test and creates a fresh
-        OCRParser instance for testing.
+        TesseractParser instance for testing.
         """
         try:
-            self.parser = OCRParser()
+            self.parser = TesseractParser()
         except ImportError:
             # Skip tests if Tesseract is not available
             pytest.skip("Tesseract not available")
     
     def test_parser_inheritance(self):
-        """Test that OCRParser inherits from BaseParser."""
-        # Check that OCRParser is a subclass of BaseParser
-        assert issubclass(OCRParser, BaseParser)
+        """Test that TesseractParser inherits from BaseParser."""
+        # Check that TesseractParser is a subclass of BaseParser
+        assert issubclass(TesseractParser, BaseParser)
         
         # Check that we can instantiate it
         assert isinstance(self.parser, BaseParser)
-        assert isinstance(self.parser, OCRParser)
+        assert isinstance(self.parser, TesseractParser)
     
     def test_parser_attributes(self):
         """Test that the parser has the correct attributes."""
@@ -135,7 +135,7 @@ class TestOCRParser:
         """Test parser initialization with custom language."""
         try:
             # Create parser with custom language
-            parser = OCRParser(language='eng')
+            parser = TesseractParser(language='eng')
             assert parser.language == 'eng'
         except ImportError:
             pytest.skip("Tesseract not available")
@@ -147,7 +147,7 @@ class TestOCRParserWithRealImages:
     def setup_method(self):
         """Set up test fixtures."""
         try:
-            self.parser = OCRParser()
+            self.parser = TesseractParser()
         except ImportError:
             pytest.skip("Tesseract not available")
     
@@ -299,14 +299,14 @@ class TestOCRParserErrorHandling:
     def setup_method(self):
         """Set up test fixtures."""
         try:
-            self.parser = OCRParser()
+            self.parser = TesseractParser()
         except ImportError:
             pytest.skip("Tesseract not available")
     
     def test_parser_with_invalid_tesseract_path(self):
         """Test parser initialization with invalid Tesseract path."""
         with pytest.raises(ImportError):
-            OCRParser(tesseract_path="/invalid/path/to/tesseract")
+            TesseractParser(tesseract_path="/invalid/path/to/tesseract")
     
     def test_extract_text_corrupted_image(self):
         """Test handling of corrupted image files."""

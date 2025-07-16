@@ -2,7 +2,7 @@
 Base parser class for document parsing.
 
 This module defines the base interface that all document parsers must implement.
-It ensures consistency across different parsing methods (OCR, PDF, AI models).
+It ensures consistency across different parsing methods (Tesseract, PaddleOCR, PDF, AI models).
 """
 
 from abc import ABC, abstractmethod
@@ -111,7 +111,7 @@ class BaseParser(ABC):
         Abstract method that subclasses must implement.
         
         This is where the actual parsing logic goes. Each parser type
-        (PDF, OCR, AI model) will implement this differently.
+        (PDF, Tesseract, PaddleOCR, AI model) will implement this differently.
         
         Args:
             file_path (Union[str, Path]): Path to the document to parse

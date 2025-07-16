@@ -2,7 +2,7 @@
 Document parsers module.
 
 Contains implementations for various document parsing methods:
-- OCR engines (Tesseract, PaddleOCR)
+- OCR engines (Tesseract [key: 'tesseract'], PaddleOCR [key: 'paddleocr'])
 - PDF libraries (PyMuPDF, pdfplumber)
 - AI model integrations (LayoutLM, DeepSeek-VL)
 """
@@ -13,7 +13,7 @@ from .base_parser import BaseParser
 # Import specific parser implementations
 from .pdf_parser import PDFParser
 from .pdfplumber_parser import PDFPlumberParser
-from .ocr_parser import OCRParser
+from .tesseract_parser import TesseractParser
 from .paddle_ocr_parser import PaddleOCRParser
 from .qwen_vl_parser import QwenVLParser
 
@@ -34,7 +34,7 @@ __all__ = [
     'BaseParser',
     'PDFParser',
     'PDFPlumberParser',
-    'OCRParser',
+    'TesseractParser',
     'PaddleOCRParser',
 ]
 
@@ -44,13 +44,14 @@ if AI_PARSERS_AVAILABLE:
         'BaseAIParser',
         'LayoutLMv3Parser',
         'DeepSeekVLParser',
+        'QwenVLParser',
     ])
 
 # Parser registry for dynamic lookup
 PARSER_REGISTRY = {
     'pdf': PDFParser,
     'pdfplumber': PDFPlumberParser,
-    'ocr': OCRParser,
+    'tesseract': TesseractParser,
     'paddleocr': PaddleOCRParser,
 }
 

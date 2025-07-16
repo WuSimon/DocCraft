@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from doccraft import (
     # Parsers
-    PDFParser, PDFPlumberParser, OCRParser, PaddleOCRParser,
+    PDFParser, PDFPlumberParser, TesseractParser, PaddleOCRParser,
     # Preprocessors
     ImagePreprocessor, PDFPreprocessor,
     # Postprocessors
@@ -79,7 +79,7 @@ def demo_parsers():
     print("\n3. Tesseract OCR Parser")
     print("-" * 30)
     try:
-        ocr_parser = OCRParser()
+        ocr_parser = TesseractParser()
         text, metadata = ocr_parser.extract_text(image_file)
         print(f"✓ Tesseract extracted {len(text)} characters")
         print(f"  Confidence: {metadata.get('ocr_confidence', 'N/A'):.2f}%")
@@ -351,7 +351,7 @@ def demo_benchmarkers():
         ground_truth = "This is a sample document for testing OCR accuracy."
         
         # Benchmark OCR parsers
-        ocr_parser = OCRParser()
+        ocr_parser = TesseractParser()
         
         # Individual accuracy benchmark
         acc_results = acc_benchmarker.benchmark(
@@ -397,7 +397,7 @@ def main():
     print("\nParsers:")
     print("  - PDFParser (PyMuPDF): Fast PDF text extraction")
     print("  - PDFPlumberParser: PDF text and table extraction")
-    print("  - OCRParser (Tesseract): Traditional OCR engine")
+    print("  - TesseractParser (Tesseract): Traditional OCR engine")
     print("  - PaddleOCRParser: Modern OCR with better accuracy")
     
     print("\nPreprocessors:")

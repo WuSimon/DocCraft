@@ -10,11 +10,19 @@ and a simple comparison of parsers.
 import json
 import time
 from pathlib import Path
+import sys
 
 # Import DocCraft parsers
 from doccraft.parsers import (
-    PDFParser, PDFPlumberParser, OCRParser, PaddleOCRParser
+    PDFParser, PDFPlumberParser, TesseractParser, PaddleOCRParser
 )
+
+# Note: AI parsers (LayoutLMv3, Qwen-VL, DeepSeek-VL) require [ai] extra
+# from doccraft.parsers import LayoutLMv3Parser, QwenVLParser, DeepSeekVLParser
+
+# Import the unified DocVQABenchmarker
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'src'))
+from doccraft.benchmarking.docvqa_benchmarker import DocVQABenchmarker
 
 
 def simple_parser_comparison(documents_dir: str):
@@ -32,7 +40,7 @@ def simple_parser_comparison(documents_dir: str):
     parsers = {
         'PyMuPDF': PDFParser(),
         'PDFPlumber': PDFPlumberParser(),
-        'Tesseract': OCRParser(),
+        'Tesseract': TesseractParser(),
         'PaddleOCR': PaddleOCRParser()
     }
     
@@ -128,112 +136,9 @@ def create_docvqa_predictions(ground_truth_path: str, documents_dir: str,
     print(f"\n{'='*60}")
     print(f"CREATING DOCVQA PREDICTIONS WITH {parser_name.upper()}")
     print(f"{'='*60}")
-    
-    # Load ground truth
-    with open(ground_truth_path, 'r') as f:
-        gt_data = json.load(f)
-    
-    # Get parser
-    parsers = {
-        'pymupdf': PDFParser(),
-        'pdfplumber': PDFPlumberParser(),
-        'tesseract': OCRParser(),
-        'paddleocr': PaddleOCRParser()
-    }
-    
-    if parser_name not in parsers:
-        print(f"Unknown parser: {parser_name}")
-        return
-    
-    parser = parsers[parser_name]
-    
-    # Create predictions
-    predictions = []
-    
-    for i, qa_item in enumerate(gt_data['data'][:5]):  # Process first 5 questions
-        question_id = qa_item['question_id']
-        question = qa_item['question']
-        
-        print(f"Processing question {question_id}: {question}")
-        
-        # Find document (simplified approach)
-        documents_dir = Path(documents_dir)
-        document_path = None
-        
-        for ext in ['.jpg', '.jpeg', '.png', '.tiff', '.tif']:
-            possible_path = documents_dir / f"{question_id}{ext}"
-            if possible_path.exists():
-                document_path = str(possible_path)
-                break
-        
-        if not document_path:
-            # Try to find any image file
-            for ext in ['.jpg', '.jpeg', '.png', '.tiff', '.tif']:
-                for path in documents_dir.glob(f"*{ext}"):
-                    document_path = str(path)
-                    break
-                if document_path:
-                    break
-        
-        if document_path:
-            print(f"  Using document: {Path(document_path).name}")
-            
-            # Extract text
-            result = parser.extract_text(document_path)
-            
-            if result['error']:
-                print(f"  Error: {result['error']}")
-                answers = ['extraction failed']
-                evidence = [0.1] * 10
-            else:
-                text = result['text']
-                print(f"  Extracted {len(text)} characters")
-                
-                # Simple answer generation (keyword matching)
-                text_lower = text.lower()
-                question_lower = question.lower()
-                
-                answers = []
-                question_words = set(question_lower.split())
-                text_words = text_lower.split()
-                
-                for word in text_words:
-                    if word in question_words and len(word) > 3:
-                        answers.append(word)
-                
-                if not answers:
-                    # Look for numbers
-                    import re
-                    numbers = re.findall(r'\d+', text)
-                    answers = numbers[:3]
-                
-                if not answers:
-                    answers = ['no specific answer found']
-                
-                # Simple evidence scoring
-                overlap_count = sum(1 for word in text_words if word in question_words)
-                relevance = min(1.0, overlap_count / max(1, len(text_words) / 10))
-                evidence = [relevance] * 10
-        else:
-            print("  No document found")
-            answers = ['no document found']
-            evidence = [0.1] * 10
-        
-        # Create prediction
-        prediction = {
-            'question_id': question_id,
-            'evidence': evidence,
-            'answer': answers
-        }
-        
-        predictions.append(prediction)
-    
-    # Save predictions
-    with open(output_path, 'w') as f:
-        json.dump(predictions, f, indent=2)
-    
+    benchmarker = DocVQABenchmarker()
+    benchmarker.generate_predictions_file(ground_truth_path, documents_dir, parser_name, output_path)
     print(f"\nPredictions saved to {output_path}")
-    print(f"Processed {len(predictions)} questions")
 
 
 def main():
@@ -260,20 +165,18 @@ def main():
     # Run simple comparison
     simple_parser_comparison(documents_dir)
     
-    # Create DocVQA predictions with different parsers
-    for parser_name in ['tesseract', 'paddleocr']:
-        output_path = f"predictions_{parser_name}.json"
-        create_docvqa_predictions(ground_truth_path, documents_dir, parser_name, output_path)
+    # Example: create predictions with unified benchmarker
+    create_docvqa_predictions(ground_truth_path, documents_dir, 'paddleocr', 'docvqa_predictions_paddleocr.json')
     
     print(f"\n{'='*60}")
     print("NEXT STEPS")
     print(f"{'='*60}")
     print("1. Run the full benchmark:")
-    print("   python docvqa_benchmark.py -g path/to/gt.json -d path/to/documents")
+    print("   doccraft benchmark -g path/to/gt.json -d path/to/documents -a")
     print("\n2. Compare specific parsers:")
-    print("   python docvqa_benchmark.py -g path/to/gt.json -d path/to/documents -p tesseract")
-    print("\n3. Use the original evaluate.py script:")
-    print("   python evaluate.py -g path/to/gt.json -s predictions_tesseract.json")
+    print("   doccraft benchmark -g path/to/gt.json -d path/to/documents -p tesseract")
+    print("\n3. Test with limited questions:")
+    print("   doccraft benchmark -g path/to/gt.json -d path/to/documents -p qwenvl --max_questions 10")
 
 
 if __name__ == "__main__":

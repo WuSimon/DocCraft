@@ -16,7 +16,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from PIL import Image, ImageDraw, ImageFont
-from doccraft.parsers import OCRParser
+from doccraft.parsers import TesseractParser
 
 
 def create_test_image(text: str, filename: str, size: tuple = (600, 200)) -> str:
@@ -74,7 +74,7 @@ def demo_basic_ocr():
     
     try:
         # Initialize the OCR parser
-        parser = OCRParser()
+        parser = TesseractParser()
         print(f"✓ OCR Parser initialized: {parser.name} v{parser.version}")
         
         # Create a test image
@@ -123,7 +123,7 @@ def demo_confidence_extraction():
     print("="*60)
     
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
         
         # Create a test image with multiple words
         test_text = "OCR Confidence Test Multiple Words"
@@ -163,7 +163,7 @@ def demo_language_support():
     print("="*60)
     
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
         
         # Get supported languages
         languages = parser.get_supported_languages()
@@ -203,7 +203,7 @@ def demo_preprocessing_options():
     print("="*60)
     
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
         
         # Create a test image
         test_text = "Preprocessing Test"
@@ -245,7 +245,7 @@ def demo_confidence_threshold():
     print("="*60)
     
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
         
         # Create a test image
         test_text = "Threshold Test"
@@ -281,7 +281,7 @@ def demo_error_handling():
     print("="*60)
     
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
         
         # Test with non-existent file
         print(f"\nTesting with non-existent file:")

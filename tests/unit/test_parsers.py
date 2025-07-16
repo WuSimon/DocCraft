@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from doccraft.parsers import PDFParser, PDFPlumberParser, OCRParser, PaddleOCRParser
+from doccraft.parsers import PDFParser, PDFPlumberParser, TesseractParser, PaddleOCRParser
 import os
 import shutil
 
@@ -17,9 +17,9 @@ def test_pdfplumber_parser_instantiation():
     parser = PDFPlumberParser()
     assert hasattr(parser, "extract_text")
 
-def test_ocr_parser_instantiation():
+def test_tesseract_parser_instantiation():
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
     except ImportError as e:
         pytest.skip(f"Tesseract not available: {e}")
     assert hasattr(parser, "extract_text")
@@ -46,7 +46,7 @@ def test_ocr_parser_extract_text():
     if not (data_dir / "lenna.png").exists():
         pytest.skip("lenna.png not found")
     try:
-        parser = OCRParser()
+        parser = TesseractParser()
     except ImportError as e:
         pytest.skip(f"Tesseract not available: {e}")
     result = parser.extract_text(data_dir / "lenna.png")

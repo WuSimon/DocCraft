@@ -12,13 +12,14 @@ import time
 import logging
 from pathlib import Path
 from typing import Dict, Any, List
+import pytest
 
 # Add the project root to the path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from doccraft.parsers import (
-    PDFParser, PDFPlumberParser, OCRParser, PaddleOCRParser,
+    PDFParser, PDFPlumberParser, TesseractParser, PaddleOCRParser,
     LayoutLMv3Parser, DeepSeekVLParser
 )
 from doccraft.benchmarking import PerformanceBenchmarker, AccuracyBenchmarker
@@ -40,7 +41,7 @@ def test_parser_initialization():
     traditional_parsers = [
         ("PDFParser", PDFParser),
         ("PDFPlumberParser", PDFPlumberParser),
-        ("OCRParser", OCRParser),
+        ("TesseractParser", TesseractParser),
         ("PaddleOCRParser", PaddleOCRParser),
     ]
     
@@ -78,7 +79,8 @@ def test_parser_initialization():
             print(f"✗ {parser_name} initialization failed: {e}")
             logger.error(f"{parser_name} initialization error: {e}")
     
-    return parsers
+    # Assert that at least some parsers were initialized successfully
+    assert len(parsers) > 0, "No parsers were initialized successfully"
 
 
 def test_benchmarker_initialization():
@@ -117,7 +119,8 @@ def test_benchmarker_initialization():
         print(f"✗ AccuracyBenchmarker initialization failed: {e}")
         logger.error(f"AccuracyBenchmarker initialization error: {e}")
     
-    return benchmarkers
+    # Assert that at least some benchmarkers were initialized successfully
+    assert len(benchmarkers) > 0, "No benchmarkers were initialized successfully"
 
 
 def test_parser_benchmark_compatibility(parsers: Dict[str, Any], benchmarkers: Dict[str, Any]):
@@ -476,6 +479,61 @@ def test_benchmark_reporting(benchmarkers: Dict[str, Any]):
         except Exception as e:
             print(f"✗ Report generation failed: {e}")
             logger.error(f"Report generation error with {benchmarker_name}: {e}")
+
+
+@pytest.fixture
+def parsers():
+    """Fixture to provide initialized parsers for tests."""
+    parsers = {}
+    
+    # Test traditional parsers
+    traditional_parsers = [
+        ("PDFParser", PDFParser),
+        ("PDFPlumberParser", PDFPlumberParser),
+        ("TesseractParser", TesseractParser),
+        ("PaddleOCRParser", PaddleOCRParser),
+    ]
+    
+    for parser_name, parser_class in traditional_parsers:
+        try:
+            parser = parser_class()
+            parsers[parser_name] = parser
+        except Exception as e:
+            logger.error(f"{parser_name} initialization error: {e}")
+    
+    # Test AI parsers
+    ai_parsers = [
+        ("LayoutLMv3Parser", LayoutLMv3Parser, {"device": "cpu"}),
+        ("DeepSeekVLParser", DeepSeekVLParser, {"device": "cpu"}),
+    ]
+    
+    for parser_name, parser_class, kwargs in ai_parsers:
+        try:
+            parser = parser_class(**kwargs)
+            parsers[parser_name] = parser
+        except Exception as e:
+            logger.error(f"{parser_name} initialization error: {e}")
+    
+    return parsers
+
+@pytest.fixture
+def benchmarkers():
+    """Fixture to provide initialized benchmarkers for tests."""
+    benchmarkers = {}
+    
+    try:
+        perf_benchmarker = PerformanceBenchmarker()
+        benchmarkers['PerformanceBenchmarker'] = perf_benchmarker
+    except Exception as e:
+        logger.error(f"PerformanceBenchmarker initialization error: {e}")
+    
+    try:
+        acc_benchmarker = AccuracyBenchmarker()
+        benchmarkers['AccuracyBenchmarker'] = acc_benchmarker
+    except Exception as e:
+        logger.error(f"AccuracyBenchmarker initialization error: {e}")
+    
+    return benchmarkers
 
 
 def main():

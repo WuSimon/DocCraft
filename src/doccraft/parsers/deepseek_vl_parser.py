@@ -51,7 +51,7 @@ class DeepSeekVLParser(BaseAIParser):
     - Visual question answering
     - Image captioning and description
     - Multimodal reasoning
-    - Document OCR and text extraction
+    - Document OCR (e.g., Tesseract [key: 'tesseract']) and text extraction
     
     Attributes:
         model: DeepSeek-VL model for multimodal understanding
@@ -82,8 +82,11 @@ class DeepSeekVLParser(BaseAIParser):
         """
         if not DEEPSEEK_VL_AVAILABLE:
             raise ImportError(
-                "DeepSeek-VL library is not installed. Please install it with: "
-                "pip install deepseek-vl transformers torch"
+                "DeepSeek-VL library is not installed. "
+                "To use the DeepSeek-VL parser, you must install it from source: "
+                "\n\n"
+                "    pip install git+https://github.com/deepseek-ai/DeepSeek-VL.git\n\n"
+                "See the DocCraft README for more details."
             )
         
         self.max_length = max_length

@@ -22,7 +22,7 @@ __all__ = [
     "BaseParser",
     "PDFParser", 
     "PDFPlumberParser",
-    "OCRParser",
+    "TesseractParser",
     "PaddleOCRParser",
     # Preprocessor classes
     "BasePreprocessor",
@@ -36,4 +36,5 @@ __all__ = [
     "BaseBenchmarker",
     "PerformanceBenchmarker",
     "AccuracyBenchmarker",
+    "DocVQABenchmarker",
 ] 

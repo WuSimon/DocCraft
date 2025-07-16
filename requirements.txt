@@ -1,0 +1,18 @@
+# Core dependencies for DocCraft
+numpy>=1.21.0
+Pillow>=8.0.0
+PyMuPDF>=1.18.0
+pdfplumber>=0.7.0
+pytesseract>=0.3.8
+opencv-python>=4.5.0
+scipy>=1.7.0
+pandas>=1.3.0
+openpyxl>=3.0.0
+psutil>=5.8.0
+paddlepaddle>=2.4.0
+paddleocr>=2.6.0
+
+# Note: AI dependencies (transformers, torch, etc.) are available as optional extras
+# Install with: pip install doccraft[ai]
+# For development: pip install doccraft[dev]
+# For everything: pip install doccraft[all]

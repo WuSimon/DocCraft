@@ -19,7 +19,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from doccraft.parsers import LayoutLMv3Parser, DeepSeekVLParser
-from doccraft.parsers import PDFParser, OCRParser
+from doccraft.parsers import PDFParser, TesseractParser
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -72,13 +72,39 @@ def test_parser_initialization():
         print(f"✗ DeepSeek-VL parser initialization failed: {e}")
         logger.error(f"DeepSeek-VL initialization error: {e}")
     
-    return parsers
+    # Assert that at least some parsers were initialized successfully
+    assert len(parsers) > 0, "No AI parsers were initialized successfully"
 
 
 @pytest.fixture(scope="module")
 def parsers():
     """Pytest fixture for initializing AI parsers."""
-    return test_parser_initialization()
+    parsers = {}
+    
+    try:
+        # Test LayoutLMv3 parser
+        layoutlmv3_parser = LayoutLMv3Parser(
+            model_name="microsoft/layoutlmv3-base",
+            device="cpu",  # Use CPU for testing
+            task="document_understanding"
+        )
+        parsers['LayoutLMv3'] = layoutlmv3_parser
+    except Exception as e:
+        logger.error(f"LayoutLMv3 initialization error: {e}")
+    
+    try:
+        # Test DeepSeek-VL parser
+        deepseek_parser = DeepSeekVLParser(
+            model_name="deepseek-ai/deepseek-vl-7b-chat",
+            device="cpu",  # Use CPU for testing
+            max_length=1024,
+            temperature=0.1
+        )
+        parsers['DeepSeek-VL'] = deepseek_parser
+    except Exception as e:
+        logger.error(f"DeepSeek-VL initialization error: {e}")
+    
+    return parsers
 
 
 def test_basic_text_extraction(parsers: Dict[str, Any]):
@@ -230,7 +256,7 @@ def test_performance_comparison(parsers: Dict[str, Any]):
     traditional_parsers = {}
     
     try:
-        ocr_parser = OCRParser()
+        ocr_parser = TesseractParser()
         traditional_parsers['Tesseract'] = ocr_parser
         print("✓ Tesseract parser initialized for comparison")
     except Exception as e:
