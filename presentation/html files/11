@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .parser-card {
+        background: rgba(74, 134, 232, 0.1);
+        border-radius: 5px;
+        padding: 8px;
+        margin-bottom: 8px;
+      }
+      .parser-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #FFFFFF;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .metric {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4A86E8;
+        text-align: center;
+        margin-bottom: 2px;
+      }
+      .metric-label {
+        font-size: 12px;
+        color: #FFFFFF;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .chart-container {
+        width: 100%;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">Parser Performance Comparison</h1>
+      
+      <div class="content">
+        <div class="grid grid-cols-3 gap-4 mb-3">
+          <div class="parser-card">
+            <h3 class="parser-title">QwenVL</h3>
+            <div class="metric">69.1%</div>
+            <div class="metric-label">Average Similarity</div>
+            <div class="metric">6.88s</div>
+            <div class="metric-label">Processing Time</div>
+            <div class="metric">100%</div>
+            <div class="metric-label">Confidence</div>
+          </div>
+          
+          <div class="parser-card">
+            <h3 class="parser-title">DeepSeekVL</h3>
+            <div class="metric">56.4%</div>
+            <div class="metric-label">Average Similarity</div>
+            <div class="metric">6.56s</div>
+            <div class="metric-label">Processing Time</div>
+            <div class="metric">100%</div>
+            <div class="metric-label">Confidence</div>
+          </div>
+          
+          <div class="parser-card">
+            <h3 class="parser-title">LayoutLMv3</h3>
+            <div class="metric">51.3%</div>
+            <div class="metric-label">Average Similarity</div>
+            <div class="metric">1.06s</div>
+            <div class="metric-label">Processing Time</div>
+            <div class="metric">74.7%</div>
+            <div class="metric-label">Confidence</div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>11</span>
+      </div>
+    </div>
+    
+    <script>
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      const radarChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: ["Exact Match Rate", "Normalized Match Rate", "High Similarity Rate", "Medium Similarity Rate", "Low Similarity Rate", "No Match Rate"],
+          datasets: [
+            {
+              label: "QwenVL",
+              data: [0.2763, 0.1649, 0.5394, 0.1539, 0.1836, 0.1232],
+              backgroundColor: "rgba(74, 134, 232, 0.2)",
+              borderColor: "rgba(74, 134, 232, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(74, 134, 232, 1)",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff",
+              pointHoverBorderColor: "rgba(74, 134, 232, 1)"
+            },
+            {
+              label: "DeepSeekVL",
+              data: [0.1477, 0.1133, 0.3520, 0.2036, 0.2516, 0.1927],
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(255, 99, 132, 1)",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff",
+              pointHoverBorderColor: "rgba(255, 99, 132, 1)"
+            },
+            {
+              label: "LayoutLMv3",
+              data: [0.1393, 0.0815, 0.3741, 0.1324, 0.1853, 0.3083],
+              backgroundColor: "rgba(255, 206, 86, 0.2)",
+              borderColor: "rgba(255, 206, 86, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(255, 206, 86, 1)",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff",
+              pointHoverBorderColor: "rgba(255, 206, 86, 1)"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              beginAtZero: true,
+              max: 0.6,
+              ticks: {
+                callback: function(value) {
+                  return (value * 100).toFixed(0) + "%";
+                },
+                color: "#FFFFFF",
+                stepSize: 0.1,
+                backdropColor: "transparent"
+              },
+              grid: {
+                color: "rgba(255, 255, 255, 0.1)"
+              },
+              angleLines: {
+                color: "rgba(255, 255, 255, 0.1)"
+              },
+              pointLabels: {
+                color: "#FFFFFF",
+                font: {
+                  size: 12
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#FFFFFF"
+              }
+            },
+            tooltip: {
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              titleColor: "#FFFFFF",
+              bodyColor: "#FFFFFF",
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || "";
+                  if (label) {
+                    label += ": ";
+                  }
+                  if (context.parsed.r !== null) {
+                    label += (context.parsed.r * 100).toFixed(2) + "%";
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+

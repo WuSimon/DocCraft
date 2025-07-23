@@ -1,67 +1,55 @@
 import sys
 import os
+import json
 from pathlib import Path
 import argparse
 
 # Import DocCraft registries and classes
-from doccraft.parsers import PARSER_REGISTRY
-from doccraft.preprocessing import ImagePreprocessor, PDFPreprocessor
-from doccraft.postprocessing import TextPostprocessor, TablePostprocessor
-from doccraft.benchmarking import AccuracyBenchmarker, PerformanceBenchmarker, DocVQABenchmarker
-
-# Registries for dynamic lookup
-PREPROCESSOR_REGISTRY = {
-    'image': ImagePreprocessor,
-    'pdf': PDFPreprocessor,
-}
-POSTPROCESSOR_REGISTRY = {
-    'text': TextPostprocessor,
-    'table': TablePostprocessor,
-}
-BENCHMARKER_REGISTRY = {
-    'accuracy': AccuracyBenchmarker,
-    'performance': PerformanceBenchmarker,
-    'docvqa': DocVQABenchmarker,
-}
+from doccraft.parsers import PARSER_REGISTRY, get_parser
+from doccraft.preprocessing import PREPROCESSOR_REGISTRY, get_preprocessor
+from doccraft.postprocessing import POSTPROCESSOR_REGISTRY, get_postprocessor
+from doccraft.benchmarking import BENCHMARKER_REGISTRY, get_benchmarker
 
 def run_pipeline(cfg):
     # Load preprocessor
     preprocessor = None
     if cfg.get('preprocessor'):
-        preproc_cls = PREPROCESSOR_REGISTRY.get(cfg['preprocessor'])
-        if not preproc_cls:
-            print(f"Unknown preprocessor: {cfg['preprocessor']}")
+        try:
+            preprocessor = get_preprocessor(cfg['preprocessor'])
+        except ValueError as e:
+            print(f"Error: {e}")
             sys.exit(1)
-        preprocessor = preproc_cls()
 
     # Load parser
-    parser_cls = PARSER_REGISTRY.get(cfg['parser'])
-    if not parser_cls:
-        print(f"Unknown parser: {cfg['parser']}")
+    try:
+        parser = get_parser(cfg['parser'])
+    except ValueError as e:
+        print(f"Error: {e}")
         sys.exit(1)
-    parser = parser_cls()
 
     # Load postprocessor
     postprocessor = None
     if cfg.get('postprocessor'):
-        postproc_cls = POSTPROCESSOR_REGISTRY.get(cfg['postprocessor'])
-        if not postproc_cls:
-            print(f"Unknown postprocessor: {cfg['postprocessor']}")
+        try:
+            postprocessor = get_postprocessor(cfg['postprocessor'])
+        except ValueError as e:
+            print(f"Error: {e}")
             sys.exit(1)
-        postprocessor = postproc_cls()
 
     # Load benchmarker
     benchmarker = None
     if cfg.get('benchmarker'):
-        bench_cls = BENCHMARKER_REGISTRY.get(cfg['benchmarker'])
-        if not bench_cls:
-            print(f"Unknown benchmarker: {cfg['benchmarker']}")
+        try:
+            if cfg['benchmarker'] == 'docvqa':
+                # DocVQABenchmarker needs dataset and images
+                benchmarker = get_benchmarker(cfg['benchmarker'], 
+                                            ground_truth_path=cfg.get('benchmark_gt'),
+                                            images_dir=cfg.get('benchmark_images'))
+            else:
+                benchmarker = get_benchmarker(cfg['benchmarker'])
+        except ValueError as e:
+            print(f"Error: {e}")
             sys.exit(1)
-        if cfg['benchmarker'] == 'docvqa':
-            # DocVQABenchmarker needs dataset and images
-            benchmarker = bench_cls(cfg.get('benchmark_gt'), cfg.get('benchmark_images'))
-        else:
-            benchmarker = bench_cls()
 
     # Load input
     input_path = cfg['input']
@@ -72,7 +60,11 @@ def run_pipeline(cfg):
         if isinstance(data, tuple):
             data, _ = data
     print(f"[Pipeline] Parsing with {parser.__class__.__name__}")
-    parsed = parser.extract_text(data)
+    # Pass prompt if present in cfg
+    extract_kwargs = {}
+    if cfg.get('prompt'):
+        extract_kwargs['prompt'] = cfg['prompt']
+    parsed = parser.extract_text(data, **extract_kwargs)
     result_text = parsed['text']
     if postprocessor:
         print(f"[Pipeline] Postprocessing with {postprocessor.__class__.__name__}")
@@ -98,19 +90,29 @@ def run_pipeline(cfg):
         print(json.dumps(metrics, indent=2))
 
 def main():
+    # If no subcommand is given but --input/-i or --parser/-p is present, default to 'pipeline'
+    if len(sys.argv) > 1 and sys.argv[1] not in {'pipeline', 'benchmark', '-h', '--help'}:
+        # Check for --input, --parser, -i, or -p in the arguments
+        if any(
+            arg.startswith('--input') or arg.startswith('--parser') or arg == '-i' or arg == '-p'
+            for arg in sys.argv[1:]
+        ):
+            sys.argv.insert(1, 'pipeline')
+
     parser = argparse.ArgumentParser(description="DocCraft Modular Pipeline CLI")
     subparsers = parser.add_subparsers(dest='command', help='Sub-commands')
 
     # Default pipeline command (legacy)
     parser_pipeline = subparsers.add_parser('pipeline', help='Run a custom pipeline (default)')
-    parser_pipeline.add_argument('--input', type=str, help='Input document path')
-    parser_pipeline.add_argument('--parser', type=str, help='Parser name (e.g., tesseract, paddleocr, pdf, pdfplumber, layoutlmv3, etc.)')
-    parser_pipeline.add_argument('--preprocessor', type=str, default=None, help='Preprocessor name (optional)')
-    parser_pipeline.add_argument('--postprocessor', type=str, default=None, help='Postprocessor name (optional)')
-    parser_pipeline.add_argument('--benchmarker', type=str, default=None, help='Benchmarker name (optional)')
-    parser_pipeline.add_argument('--benchmark_gt', type=str, default=None, help='Ground truth for benchmarking (if needed)')
-    parser_pipeline.add_argument('--benchmark_images', type=str, default=None, help='Images dir for DocVQA benchmarker (if needed)')
-    parser_pipeline.add_argument('--config', type=str, default=None, help='JSON config file (overrides CLI args)')
+    parser_pipeline.add_argument('--input', '-i', type=str, help='Input document path')
+    parser_pipeline.add_argument('--parser', '-p', type=str, help='Parser name (e.g., tesseract, paddleocr, pdf, pdfplumber, layoutlmv3, etc.)')
+    parser_pipeline.add_argument('--preprocessor', '-r', type=str, default=None, help='Preprocessor name (optional)')
+    parser_pipeline.add_argument('--postprocessor', '-s', type=str, default=None, help='Postprocessor name (optional)')
+    parser_pipeline.add_argument('--benchmarker', '-b', type=str, default=None, help='Benchmarker name (optional)')
+    parser_pipeline.add_argument('--benchmark_gt', '-g', type=str, default=None, help='Ground truth for benchmarking (if needed)')
+    parser_pipeline.add_argument('--benchmark_images', '-d', type=str, default=None, help='Images dir for DocVQA benchmarker (if needed)')
+    parser_pipeline.add_argument('--config', '-c', type=str, default=None, help='JSON config file (overrides CLI args)')
+    parser_pipeline.add_argument('--prompt', type=str, default=None, help='Prompt or question for AI parsers (optional)')
     parser_pipeline.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
     # Benchmark command
@@ -124,6 +126,12 @@ def main():
     parser_benchmark.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
     parser_benchmark.add_argument('--save_predictions', action='store_true', help='Save individual predictions to separate files')
     parser_benchmark.add_argument('--compare', action='store_true', help='Generate comparison report when using --all_parsers')
+
+    # Evaluate subcommand
+    parser_evaluate = subparsers.add_parser('evaluate', help='Compare and visualize DocVQA benchmark results')
+    parser_evaluate.add_argument('--results', '-r', type=str, nargs='+', required=True, help='Path(s) to results JSON file(s)')
+    parser_evaluate.add_argument('--visualize', '-v', action='store_true', help='Visualize the comparison with plots')
+    parser_evaluate.add_argument('--output', '-o', type=str, default=None, help='Path to save the evaluation summary (JSON)')
 
     args = parser.parse_args()
 
@@ -254,8 +262,13 @@ def main():
         print(f"{'='*80}")
         return 0
 
+    elif args.command == 'evaluate':
+        from doccraft.benchmarking.evaluate import evaluate_results
+        evaluate_results(args.results, visualize=args.visualize, output_path=args.output)
+        return 0
+
     elif args.command == 'pipeline' or not args.command:
-        # Legacy pipeline functionality
+        # Use the new run_pipeline function with registry systems
         if not args.input:
             print("Error: --input is required for pipeline command")
             return 1
@@ -264,23 +277,22 @@ def main():
             print("Error: --parser is required for pipeline command")
             return 1
         
-        # Import and run pipeline
-        try:
-            from doccraft.parsers import get_parser
-            parser_instance = get_parser(args.parser)
-            result = parser_instance.extract_text(args.input)
-            
-            if args.verbose:
-                print(f"Parser: {args.parser}")
-                print(f"Input: {args.input}")
-                print(f"Result: {result}")
-            else:
-                print(result.get('text', 'No text extracted'))
-            
-            return 0
-        except Exception as e:
-            print(f"Error: {e}")
-            return 1
+        # Build configuration dict for run_pipeline
+        cfg = {
+            'input': args.input,
+            'parser': args.parser,
+            'preprocessor': args.preprocessor,
+            'postprocessor': args.postprocessor,
+            'benchmarker': args.benchmarker,
+            'benchmark_gt': args.benchmark_gt,
+            'benchmark_images': args.benchmark_images,
+            'prompt': args.prompt,
+            'verbose': args.verbose
+        }
+        
+        # Run the pipeline with new registry systems
+        run_pipeline(cfg)
+        return 0
 
     else:
         parser.print_help()

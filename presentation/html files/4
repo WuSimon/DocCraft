@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .registry-box {
+        background: rgba(74, 134, 232, 0.1);
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .registry-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #4A86E8;
+        margin-bottom: 10px;
+      }
+      .code-block {
+        background: #2D2D2D;
+        border-radius: 5px;
+        padding: 10px;
+        font-family: monospace;
+        margin-top: 10px;
+        border-left: 3px solid #34A853;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .highlight {
+        color: #34A853;
+      }
+      .registry-icon {
+        color: #4A86E8;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">Modular Architecture & Registry Systems</h1>
+      
+      <div class="content mb-6">
+        <p>DocCraft is built with a modular, object-oriented architecture, making it easy to extend and customize. Each subpackage includes a registry system for dynamic component lookup.</p>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-6">
+        <div class="registry-box">
+          <div class="flex items-center">
+            <i class="fas fa-file-alt registry-icon text-xl"></i>
+            <h3 class="registry-title">Parser Registry</h3>
+          </div>
+          <p><span class="font-semibold">Location:</span> src/doccraft/parsers/__init__.py</p>
+          <p><span class="font-semibold">Registry:</span> PARSER_REGISTRY</p>
+          <p><span class="font-semibold">Function:</span> get_parser(parser_name: str)</p>
+          <div class="code-block">
+            <code>from doccraft.parsers import get_parser;<br>
+            parser = get_parser('tesseract')</code>
+          </div>
+        </div>
+        
+        <div class="registry-box">
+          <div class="flex items-center">
+            <i class="fas fa-cogs registry-icon text-xl"></i>
+            <h3 class="registry-title">Preprocessor Registry</h3>
+          </div>
+          <p><span class="font-semibold">Location:</span> src/doccraft/preprocessing/__init__.py</p>
+          <p><span class="font-semibold">Registry:</span> PREPROCESSOR_REGISTRY</p>
+          <p><span class="font-semibold">Function:</span> get_preprocessor(preprocessor_name: str)</p>
+          <div class="code-block">
+            <code>from doccraft.preprocessing import get_preprocessor;<br>
+            preproc = get_preprocessor('image')</code>
+          </div>
+        </div>
+        
+        <div class="registry-box">
+          <div class="flex items-center">
+            <i class="fas fa-filter registry-icon text-xl"></i>
+            <h3 class="registry-title">Postprocessor Registry</h3>
+          </div>
+          <p><span class="font-semibold">Location:</span> src/doccraft/postprocessing/__init__.py</p>
+          <p><span class="font-semibold">Registry:</span> POSTPROCESSOR_REGISTRY</p>
+          <p><span class="font-semibold">Function:</span> get_postprocessor(postprocessor_name: str)</p>
+          <div class="code-block">
+            <code>from doccraft.postprocessing import get_postprocessor;<br>
+            postproc = get_postprocessor('text')</code>
+          </div>
+        </div>
+        
+        <div class="registry-box">
+          <div class="flex items-center">
+            <i class="fas fa-chart-line registry-icon text-xl"></i>
+            <h3 class="registry-title">Benchmarker Registry</h3>
+          </div>
+          <p><span class="font-semibold">Location:</span> src/doccraft/benchmarking/__init__.py</p>
+          <p><span class="font-semibold">Registry:</span> BENCHMARKER_REGISTRY</p>
+          <p><span class="font-semibold">Function:</span> get_benchmarker(benchmarker_name: str, **kwargs)</p>
+          <div class="code-block">
+            <code>from doccraft.benchmarking import get_benchmarker;<br>
+            bench = get_benchmarker('accuracy')</code>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>4</span>
+      </div>
+    </div>
+  </body>
+</html>
+

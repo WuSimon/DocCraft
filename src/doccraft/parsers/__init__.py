@@ -60,4 +60,21 @@ if AI_PARSERS_AVAILABLE:
         'layoutlmv3': LayoutLMv3Parser,
         'deepseekvl': DeepSeekVLParser,
         'qwenvl': QwenVLParser,
-    }) 
+    })
+
+def get_parser(parser_name: str):
+    """
+    Retrieve a parser instance by name from the registry.
+    Args:
+        parser_name (str): The key for the parser (e.g., 'tesseract', 'paddleocr', 'pdf', etc.)
+    Returns:
+        BaseParser: An instance of the requested parser.
+    Raises:
+        ValueError: If the parser name is not found in the registry.
+    """
+    parser_cls = PARSER_REGISTRY.get(parser_name.lower())
+    if parser_cls is None:
+        raise ValueError(f"Parser '{parser_name}' not found. Available: {list(PARSER_REGISTRY.keys())}")
+    return parser_cls()
+
+__all__.append('get_parser') 

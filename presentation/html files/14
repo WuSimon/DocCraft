@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .title {
+        font-size: 48px;
+        font-weight: bold;
+        color: #FFFFFF;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .subtitle {
+        font-size: 24px;
+        color: #4A86E8;
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .stats-container {
+        display: flex;
+        gap: 60px;
+        margin-bottom: 40px;
+      }
+      .stat-box {
+        background: rgba(74, 134, 232, 0.1);
+        border-radius: 10px;
+        padding: 20px 30px;
+        text-align: center;
+        border: 2px solid rgba(74, 134, 232, 0.3);
+      }
+      .stat-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: #4A86E8;
+        margin-bottom: 5px;
+      }
+      .stat-label {
+        font-size: 18px;
+        color: #FFFFFF;
+      }
+      .contact-info {
+        font-size: 20px;
+        color: #CCCCCC;
+        text-align: center;
+        line-height: 1.6;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .icon {
+        font-size: 60px;
+        color: #34A853;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <div class="flex flex-col items-center">
+        <i class="fas fa-lightbulb icon"></i>
+        
+        <h1 class="title">Thank You!</h1>
+        
+        <p class="subtitle">DocCraft: A Modular Document Processing Toolkit</p>
+        
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-value">11,235</div>
+            <div class="stat-label">Total Python Lines</div>
+          </div>
+          
+          <div class="stat-box">
+            <div class="stat-value">15 MB</div>
+            <div class="stat-label">Total size of src/doccraft/</div>
+          </div>
+        </div>
+        
+        <div class="contact-info">
+          <p><strong>Author: Simon Wu</strong></p>
+          <p><strong>Questions?</strong></p>
+          <p>Feel free to ask!</p>
+          <p class="mt-4">
+            <i class="fas fa-envelope mr-2"></i>
+            <a href="mailto:simon.wu@rwth-aachen.de" class="text-white">simon.wu@rwth-aachen.de</a>
+          </p>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>14</span>
+      </div>
+    </div>
+  </body>
+</html>
+

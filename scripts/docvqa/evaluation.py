@@ -231,28 +231,91 @@ def print_results(results: Dict[str, Any]):
         print()
 
 
+def evaluate_multiple_predictions(ground_truth_path: str, predictions_paths: list) -> list:
+    """Evaluate multiple prediction files and return a list of results with metrics."""
+    all_results = []
+    for pred_path in predictions_paths:
+        print(f"\nEvaluating: {pred_path}")
+        results = evaluate_predictions(ground_truth_path, pred_path)
+        results['file'] = pred_path
+        all_results.append(results)
+    return all_results
+
+def print_comparison_table(all_results: list):
+    """Print a table comparing main metrics for all evaluated files."""
+    print("\n" + "="*60)
+    print("DOCVQA TASK 1 BENCHMARK COMPARISON")
+    print("="*60)
+    header = f"{'File':40}  {'Exact':>7}  {'Norm':>7}  {'Total':>7}  {'AvgSim':>7}  {'High':>7}  {'Med':>7}  {'Low':>7}  {'NoMatch':>7}"
+    print(header)
+    print("-"*len(header))
+    for res in all_results:
+        print(f"{res['file'][:40]:40}  {res.get('exact_match_rate',0):7.2%}  {res.get('normalized_match_rate',0):7.2%}  {(res.get('exact_match_rate',0)+res.get('normalized_match_rate',0)):7.2%}  {res.get('average_similarity',0):7.3f}  {res.get('high_similarity_rate',0):7.2%}  {res.get('medium_similarity_rate',0):7.2%}  {res.get('low_similarity_rate',0):7.2%}  {res.get('no_match_rate',0):7.2%}")
+
 def main():
-    parser = argparse.ArgumentParser(description="Evaluate DocVQA Task 1 predictions")
+    parser = argparse.ArgumentParser(description="Evaluate DocVQA Task 1 predictions (supports multiple predictions files)")
     parser.add_argument('--ground_truth', '-g', required=True,
                        help="Path to ground truth JSON file")
-    parser.add_argument('--predictions', '-p', required=True,
-                       help="Path to predictions JSON file")
+    parser.add_argument('--predictions', '-p', required=True, nargs='+',
+                       help="Path(s) to predictions JSON file(s)")
     parser.add_argument('--output', '-o',
                        help="Path to save detailed results JSON file")
-    
+    parser.add_argument('--summary_output', '-s',
+                       help="Path to save summary table JSON file (main metrics only)")
     args = parser.parse_args()
-    
-    # Evaluate predictions
-    results = evaluate_predictions(args.ground_truth, args.predictions)
-    
-    # Print results
-    print_results(results)
-    
-    # Save detailed results if requested
-    if args.output:
-        with open(args.output, 'w') as f:
-            json.dump(results, f, indent=2)
-        print(f"\nDetailed results saved to: {args.output}")
+    if len(args.predictions) == 1:
+        # Single file: behave as before
+        results = evaluate_predictions(args.ground_truth, args.predictions[0])
+        results['file'] = args.predictions[0]  # Ensure 'file' key is present
+        print_comparison_table([results])
+        print_results(results)
+        if args.output:
+            with open(args.output, 'w') as f:
+                json.dump(results, f, indent=2)
+            print(f"\nDetailed results saved to: {args.output}")
+        if args.summary_output:
+            summary = [{
+                'file': results['file'],
+                'exact_match_rate': results.get('exact_match_rate', 0),
+                'normalized_match_rate': results.get('normalized_match_rate', 0),
+                'total_match_rate': results.get('exact_match_rate', 0) + results.get('normalized_match_rate', 0),
+                'average_similarity': results.get('average_similarity', 0),
+                'high_similarity_rate': results.get('high_similarity_rate', 0),
+                'medium_similarity_rate': results.get('medium_similarity_rate', 0),
+                'low_similarity_rate': results.get('low_similarity_rate', 0),
+                'no_match_rate': results.get('no_match_rate', 0),
+            }]
+            with open(args.summary_output, 'w') as f:
+                json.dump(summary, f, indent=2)
+            print(f"\nSummary table saved to: {args.summary_output}")
+    else:
+        # Multiple files: print comparison table first, then per-file details
+        all_results = evaluate_multiple_predictions(args.ground_truth, args.predictions)
+        print_comparison_table(all_results)
+        for res in all_results:
+            print(f"\n{'='*60}\nResults for: {res['file']}\n{'='*60}")
+            print_results(res)
+        if args.output:
+            with open(args.output, 'w') as f:
+                json.dump(all_results, f, indent=2)
+            print(f"\nDetailed results saved to: {args.output}")
+        if args.summary_output:
+            summary = []
+            for res in all_results:
+                summary.append({
+                    'file': res['file'],
+                    'exact_match_rate': res.get('exact_match_rate', 0),
+                    'normalized_match_rate': res.get('normalized_match_rate', 0),
+                    'total_match_rate': res.get('exact_match_rate', 0) + res.get('normalized_match_rate', 0),
+                    'average_similarity': res.get('average_similarity', 0),
+                    'high_similarity_rate': res.get('high_similarity_rate', 0),
+                    'medium_similarity_rate': res.get('medium_similarity_rate', 0),
+                    'low_similarity_rate': res.get('low_similarity_rate', 0),
+                    'no_match_rate': res.get('no_match_rate', 0),
+                })
+            with open(args.summary_output, 'w') as f:
+                json.dump(summary, f, indent=2)
+            print(f"\nSummary table saved to: {args.summary_output}")
 
 
 if __name__ == "__main__":

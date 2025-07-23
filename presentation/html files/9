@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .source-link {
+        font-size: 18px;
+        color: #4A86E8;
+        margin-bottom: 10px;
+      }
+      .command {
+        background: #2D2D2D;
+        border-left: 3px solid #4A86E8;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        margin-bottom: 15px;
+        overflow-x: auto;
+        font-size: 16px;
+      }
+      .output-box {
+        background: rgba(74, 134, 232, 0.1);
+        border-radius: 5px;
+        padding: 10px;
+      }
+      .output-box-qwenvl {
+        height: 240px;
+      }
+      .output-box-deepseekvl {
+        height: 180px;
+      }
+      .output-box-layoutlmv3 {
+        height: 120px;
+      }
+      .parser-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #34A853;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+      }
+      .parser-icon {
+        margin-right: 10px;
+      }
+      .json-content {
+        font-family: monospace;
+        white-space: pre-wrap;
+        background: #2D2D2D;
+        padding: 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        overflow-y: hidden;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .source-image {
+        border: 2px solid rgba(74, 134, 232, 0.5);
+        border-radius: 5px;
+        max-height: 500px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">Package Output Example</h1>
+      
+      <div class="content grid grid-cols-2 gap-6">
+        <div>
+          <div class="source-link mb-2">
+            <i class="fas fa-link mr-2"></i>Source: <a href="https://www.industrydocuments.ucsf.edu/docs/fgkg0227" target="_blank">https://www.industrydocuments.ucsf.edu/docs/fgkg0227</a>
+          </div>
+          
+          <div class="command mb-4">
+            <code>doccraft --input tests/data/docvqa/spdocvqa_images/fgkg0227_1.png --parser qwenvl --prompt "Extract fields: {\"Name\": \"\", \"Place of Birth\": \"\", \"Date of Birth\": \"\", \"Education\": \"\", \"Certification\": \"\"}"</code>
+          </div>
+          
+          <div class="flex justify-center">
+            <img src="https://private-us-east-1.manuscdn.com/sessionFile/iAkd1Fa10LZEIKiiDwLMFO/sandbox/slides_resource_igy8vjnx7oxsj1jlw7ydv-c24537e4-e2b-prod-aws_1752833127629_na1fn_L2hvbWUvdWJ1bnR1L2RvY2NyYWZ0X25ld19wcmVzZW50YXRpb24vaW1hZ2VzL2Zna2cwMjI3XzE.png?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvaUFrZDFGYTEwTFpFSUtpaUR3TE1GTy9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pZ3k4dmpueDdveHNqMWpsdzd5ZHYtYzI0NTM3ZTQtZTJiLXByb2QtYXdzXzE3NTI4MzMxMjc2MjlfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwyUnZZMk55WVdaMFgyNWxkMTl3Y21WelpXNTBZWFJwYjI0dmFXMWhaMlZ6TDJabmEyY3dNakkzWHpFLnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSx3XzE1NjAsaF8xNTYwL2Zvcm1hdCx3ZWJwIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzk4NzYxNjAwfX19XX0_&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=p-h9EjTxvWIcvqYiYl5Nm34TUrnL4DzCTqM-YZEg1L6Dlujk1pL9sb3Y7ftJdV3dthlWxgIZHPR1PDk8CiKEDhVPazlHK28jzCnRUK6AsVk6d-1UzjXMM2pEFAq~PDvqAfH4hyLt4tRTvqBaUzo4IrMsXQg-9LoizNuSm~dqq3ZAIVgH1rJAXtSHhdqe1o7Vcohcmi85blPBFMOacT2Rzl1RQn2d5To9x~-M2aTuuhyYT3YC2HnZnd6Au8511VzfUmiK8Hv3xSr4X6uLSZ--fN9n~~zZdF6s5ltcLXtpHLEp9IS2QvN-zAh2~0xWLSac7ui7uW2aofJYE5Mccevqaw__" alt="Source Document" class="source-image" />
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+          <div class="output-box output-box-qwenvl">
+            <div class="parser-title">
+              <i class="fas fa-brain parser-icon"></i>
+              <span>QwenVL Output</span>
+            </div>
+            <div class="json-content">
+{
+  "Name": "Saul Rosenzweig",
+  "Place of Birth": "Boston, Massachusetts",
+  "Date of Birth": "February 7, 1907",
+  "Education": "Harvard University",
+  "Degrees": "A. B. , Summa Cum Laude",
+  "Year": "1929",
+  "School": "Harvard University",
+  "Ph. D.": "1932",
+  "Certification": "Diplomate in Clinical Psychology, American Psychological Association"
+}
+            </div>
+          </div>
+          
+          <div class="output-box output-box-deepseekvl">
+            <div class="parser-title">
+              <i class="fas fa-brain parser-icon"></i>
+              <span>DeepSeekVL Output</span>
+            </div>
+            <div class="json-content">
+{
+  "Name": "Saul Rosenzweig",
+  "Place of Birth": "Detroit, Michigan",
+  "Date of Birth": "February 7, 1907",
+  "Education": "B.A., 1929 Harvard University",
+  "Certification": "Diplomate in Clinical Psychology, American Psychological Association"
+}
+            </div>
+          </div>
+          
+          <div class="output-box output-box-layoutlmv3">
+            <div class="parser-title">
+              <i class="fas fa-brain parser-icon"></i>
+              <span>LayoutLMv3 Output</span>
+            </div>
+            <div class="json-content">
+Diplomate in Clinical Psychology, American Psychological Association
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>9</span>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .table-header {
+        background-color: rgba(74, 134, 232, 0.5);
+        font-weight: bold;
+        padding: 4px 6px;
+        border-bottom: 1px solid #4A86E8;
+      }
+      .table-row {
+        background-color: rgba(74, 134, 232, 0.15);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .table-row:nth-child(even) {
+        background-color: rgba(74, 134, 232, 0.1);
+      }
+      .table-cell {
+        padding: 3px 6px;
+        font-size: 12px;
+      }
+      .command-section {
+        margin-bottom: 10px;
+      }
+      .command-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #34A853;
+        margin-bottom: 5px;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .required-badge {
+        background-color: #4A86E8;
+        color: white;
+        font-size: 10px;
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+      .optional-badge {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 10px;
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">CLI Options</h1>
+      
+      <div class="content">
+        <div class="grid grid-cols-1 gap-4">
+          <div class="command-section">
+            <h2 class="command-title">
+              <i class="fas fa-terminal mr-2"></i>Pipeline Command Options
+            </h2>
+            <div class="overflow-hidden">
+              <table class="w-full">
+                <thead>
+                  <tr class="table-header">
+                    <th class="table-cell text-left w-1/6">Long Option</th>
+                    <th class="table-cell text-left w-1/12">Short</th>
+                    <th class="table-cell text-left w-1/12">Req</th>
+                    <th class="table-cell text-left w-2/3">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-row">
+                    <td class="table-cell">--input</td>
+                    <td class="table-cell">-i</td>
+                    <td class="table-cell"><span class="required-badge">Yes</span></td>
+                    <td class="table-cell">Input document path</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--parser</td>
+                    <td class="table-cell">-p</td>
+                    <td class="table-cell"><span class="required-badge">Yes</span></td>
+                    <td class="table-cell">Parser name (e.g., tesseract, paddleocr, pdf, layoutlmv3, etc.)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--preprocessor</td>
+                    <td class="table-cell">-r</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Preprocessor name (optional)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--postprocessor</td>
+                    <td class="table-cell">-s</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Postprocessor name (optional)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--benchmarker</td>
+                    <td class="table-cell">-b</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Benchmarker name (optional)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--benchmark_gt</td>
+                    <td class="table-cell">-g</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Ground truth for benchmarking (if needed)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--benchmark_images</td>
+                    <td class="table-cell">-d</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Images dir for DocVQA benchmarker (if needed)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--config</td>
+                    <td class="table-cell">-c</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">JSON config file (overrides CLI args)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--prompt</td>
+                    <td class="table-cell"></td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Prompt or question for AI parsers (optional, no short option)</td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell">--verbose</td>
+                    <td class="table-cell">-v</td>
+                    <td class="table-cell"><span class="optional-badge">No</span></td>
+                    <td class="table-cell">Verbose output</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="command-section">
+              <h2 class="command-title">
+                <i class="fas fa-chart-line mr-2"></i>Benchmark Command Options
+              </h2>
+              <div class="overflow-hidden">
+                <table class="w-full">
+                  <thead>
+                    <tr class="table-header">
+                      <th class="table-cell text-left">Long Option</th>
+                      <th class="table-cell text-left">Short</th>
+                      <th class="table-cell text-left">Req</th>
+                      <th class="table-cell text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="table-row">
+                      <td class="table-cell">--ground_truth</td>
+                      <td class="table-cell">-g</td>
+                      <td class="table-cell"><span class="required-badge">Yes</span></td>
+                      <td class="table-cell">Path to DocVQA ground truth JSON file</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--documents</td>
+                      <td class="table-cell">-d</td>
+                      <td class="table-cell"><span class="required-badge">Yes</span></td>
+                      <td class="table-cell">Directory containing document images</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--parser</td>
+                      <td class="table-cell">-p</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Parser to use (default: layoutlmv3)</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--all_parsers</td>
+                      <td class="table-cell">-a</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Benchmark all available parsers</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--max_questions</td>
+                      <td class="table-cell"></td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Maximum number of questions to process</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--output_dir</td>
+                      <td class="table-cell">-o</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Output directory for results (default: results)</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--verbose</td>
+                      <td class="table-cell">-v</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Enable verbose output</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--save_predictions</td>
+                      <td class="table-cell"></td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Save individual predictions to separate files</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div class="command-section">
+              <h2 class="command-title">
+                <i class="fas fa-search-plus mr-2"></i>Evaluate Command Options
+              </h2>
+              <div class="overflow-hidden">
+                <table class="w-full">
+                  <thead>
+                    <tr class="table-header">
+                      <th class="table-cell text-left">Long Option</th>
+                      <th class="table-cell text-left">Short</th>
+                      <th class="table-cell text-left">Req</th>
+                      <th class="table-cell text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="table-row">
+                      <td class="table-cell">--results</td>
+                      <td class="table-cell">-r</td>
+                      <td class="table-cell"><span class="required-badge">Yes</span></td>
+                      <td class="table-cell">Path(s) to results JSON file(s) to compare</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--visualize</td>
+                      <td class="table-cell">-v</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Visualize the comparison with plots</td>
+                    </tr>
+                    <tr class="table-row">
+                      <td class="table-cell">--output</td>
+                      <td class="table-cell">-o</td>
+                      <td class="table-cell"><span class="optional-badge">No</span></td>
+                      <td class="table-cell">Path to save the evaluation summary (JSON)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>7</span>
+      </div>
+    </div>
+  </body>
+</html>
+

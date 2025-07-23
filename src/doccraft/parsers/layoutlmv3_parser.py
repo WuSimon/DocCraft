@@ -241,6 +241,13 @@ class LayoutLMv3Parser(BaseAIParser):
         # Extract OCR text and bounding boxes
         words, boxes = self._extract_ocr_text_and_boxes(document)
         
+        # Defensive check: log and raise if mismatch
+        if len(words) != len(boxes):
+            print(f"[LayoutLMv3] ERROR: Number of words ({len(words)}) does not match number of boxes ({len(boxes)})")
+            print(f"First 5 words: {words[:5]}")
+            print(f"First 5 boxes: {boxes[:5]}")
+            raise ValueError(f"Number of words ({len(words)}) does not match number of boxes ({len(boxes)})")
+        
         # If no OCR text found, use a fallback
         if not words:
             words = ["document", "text", "content"]

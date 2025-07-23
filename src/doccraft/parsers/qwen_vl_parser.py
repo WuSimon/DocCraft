@@ -87,3 +87,7 @@ class QwenVLParser(BaseAIParser):
             'confidence': result.get('confidence', 1.0),
             'raw_answer': result['raw_answer']
         } 
+
+    def _extract_text_impl(self, file_path, **kwargs):
+        question = kwargs.pop('prompt', None)
+        return self._process_with_ai(None, image_path=str(file_path), question=question, **kwargs), {} 

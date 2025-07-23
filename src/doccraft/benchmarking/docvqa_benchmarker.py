@@ -142,25 +142,18 @@ class DocVQABenchmarker(BaseBenchmarker):
             questions = questions[:max_questions]
         print(f"Processing {len(questions)} questions...")
         parser = self.get_parser(parser_name)
-        
         start_time = time.time()
         predictions = []
-        
-        for i, qa_item in enumerate(questions):
-            if i % 10 == 0:
-                elapsed = time.time() - start_time
-                print(f"Processing question {i+1}/{len(questions)} (Elapsed: {elapsed:.1f} seconds)")
-            
-            question_id = qa_item['questionId']
-            question = qa_item['question']
-            image_path = qa_item['image']
-            
+        for idx, q in enumerate(questions):
+            question_id = q['questionId']
+            question = q['question']
+            image_path = q['image']
+            # Patch: strip 'documents/' prefix if present
             if image_path.startswith('documents/'):
-                image_path = image_path.replace('documents/', '')
+                image_path = image_path[len('documents/'):]
+            ground_truth_answers = q.get('answers', [])
             full_image_path = os.path.join(documents_dir, image_path)
-            
             prediction_start_time = time.time()
-            
             if not os.path.exists(full_image_path):
                 print(f"Warning: Image not found: {full_image_path}")
                 predicted_answer = "No answer"
@@ -182,9 +175,7 @@ class DocVQABenchmarker(BaseBenchmarker):
                     predicted_answer = f"Error: {e}"
                     confidence = 0.0
                     extracted_text = ""
-            
             processing_time = time.time() - prediction_start_time
-            
             predictions.append({
                 'questionId': question_id,
                 'question': question,
@@ -192,18 +183,29 @@ class DocVQABenchmarker(BaseBenchmarker):
                 'predicted_answer': predicted_answer,
                 'confidence': confidence,
                 'extracted_text': extracted_text[:200] + "..." if len(extracted_text) > 200 else extracted_text,
-                'processing_time': processing_time
+                'processing_time': processing_time,
+                'ground_truth': ground_truth_answers
             })
-        
+            # Print progress every 10 questions
+            if (idx + 1) % 10 == 0 or (idx + 1) == len(questions):
+                elapsed = time.time() - start_time
+                mins = int(elapsed // 60)
+                secs = int(elapsed % 60)
+                print(f"{idx + 1}/{len(questions)} questions, elapsed time: {mins}m {secs}s")
         elapsed_time = time.time() - start_time
-        
+        # Calculate metrics
+        metrics = self.calculate_metrics(predictions, gt_data)
+        average_confidence = sum(p['confidence'] for p in predictions) / len(predictions) if predictions else 0.0
+        average_processing_time = sum(p['processing_time'] for p in predictions) / len(predictions) if predictions else 0.0
         results = {
             'parser': parser_name,
             'total_questions': len(questions),
             'elapsed_time_seconds': elapsed_time,
-            'predictions': predictions
+            'predictions': predictions,
+            'metrics': metrics,
+            'average_confidence': average_confidence,
+            'average_processing_time': average_processing_time
         }
-        
         print(f"\u2713 Completed {parser_name} benchmark")
         return results
 
@@ -234,63 +236,11 @@ class DocVQABenchmarker(BaseBenchmarker):
         print(f"\nResults saved to: {output_path}")
 
     def generate_predictions_file(self, ground_truth_path: str, documents_dir: str, parser_name: str, output_path: str, max_questions: Optional[int] = None) -> None:
-        print(f"\nGenerating predictions with {parser_name}...")
-        gt_data = self.load_ground_truth(ground_truth_path)
-        questions = gt_data['data']
-        if max_questions:
-            questions = questions[:max_questions]
-        parser = self.get_parser(parser_name)
-        predictions = []
-        start_time = time.time()
-        for i, qa_item in enumerate(questions):
-            if i % 10 == 0:
-                elapsed = time.time() - start_time
-                print(f"Processing question {i+1}/{len(questions)} (Elapsed: {elapsed:.1f} seconds)")
-            question_id = qa_item['questionId']
-            question = qa_item['question']
-            image_path = qa_item['image']
-            if image_path.startswith('documents/'):
-                image_path = image_path.replace('documents/', '')
-            full_image_path = os.path.join(documents_dir, image_path)
-            if not os.path.exists(full_image_path):
-                print(f"Warning: Image not found: {full_image_path}")
-                predicted_answer = "No answer"
-                confidence = 0.0
-                extracted_text = ""
-            else:
-                try:
-                    if hasattr(parser, 'ask_question'):
-                        result = parser.ask_question(full_image_path, question)
-                        predicted_answer = result.get('answer', 'No answer')
-                        confidence = result.get('confidence', 0.0)
-                        extracted_text = result.get('raw_answer', '')
-                    else:
-                        extracted_text = self.extract_text_from_document(parser, image_path, documents_dir)
-                        predicted_answer = self.generate_answer(question, extracted_text)
-                        confidence = 1.0
-                except Exception as e:
-                    print(f"Error processing question {question_id}: {e}")
-                    predicted_answer = f"Error: {e}"
-                    confidence = 0.0
-                    extracted_text = ""
-            predictions.append({
-                'questionId': question_id,
-                'question': question,
-                'image': image_path,
-                'predicted_answer': predicted_answer,
-                'confidence': confidence,
-                'extracted_text': extracted_text
-            })
-        elapsed_time = time.time() - start_time
-        output_data = {
-            'parser': parser_name,
-            'total_questions': len(questions),
-            'elapsed_time_seconds': elapsed_time,
-            'predictions': predictions
-        }
+        # Always use unified format for predictions file
+        results = self.benchmark(ground_truth_path, documents_dir, parser_name, max_questions)
         with open(output_path, 'w') as f:
-            json.dump(output_data, f, indent=2)
-        print(f"\u2713 Predictions saved to: {output_path}") 
+            json.dump(results, f, indent=2)
+        print(f"\u2713 Predictions saved to: {output_path}")
 
     @staticmethod
     def normalize_text(text: str) -> str:
@@ -392,40 +342,19 @@ class DocVQABenchmarker(BaseBenchmarker):
 
     @staticmethod
     def generate_report(results: Dict[str, Any], output_dir: str, parser_name: str) -> None:
-        """Generate comprehensive benchmark report."""
+        """Generate comprehensive benchmark report (raw results and flat predictions only)."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         os.makedirs(output_dir, exist_ok=True)
-        
         # Save raw results
         results_file = os.path.join(output_dir, f"{parser_name}_results_{timestamp}.json")
         with open(results_file, 'w') as f:
             json.dump(results, f, indent=2)
-        
         # Always save flat predictions file for evaluation
         if 'predictions' in results:
             flat_file = os.path.join(output_dir, f"{parser_name}_task1_predictions.json")
             with open(flat_file, 'w') as f:
                 json.dump(results['predictions'], f, indent=2)
             print(f"  - Flat predictions: {flat_file}")
-        
-        # Generate summary statistics
-        if 'predictions' in results:
-            preds = results['predictions']
-            summary = {
-                'parser': parser_name,
-                'timestamp': timestamp,
-                'total_questions': len(preds),
-                'average_confidence': sum(p.get('confidence', 0.0) for p in preds) / len(preds) if preds else 0.0,
-                'average_processing_time': sum(p.get('processing_time', 0.0) for p in preds) / len(preds) if preds else 0.0,
-                'total_processing_time': sum(p.get('processing_time', 0.0) for p in preds) if preds else 0.0
-            }
-            if 'metrics' in results:
-                summary.update(results['metrics'])
-            summary_file = os.path.join(output_dir, f"{parser_name}_summary_{timestamp}.json")
-            with open(summary_file, 'w') as f:
-                json.dump(summary, f, indent=2)
-            print(f"  - Summary: {summary_file}")
-        
         print(f"\nResults saved to:")
         print(f"  - Raw results: {results_file}")
 

@@ -347,3 +347,22 @@ class DeepSeekVLParser(BaseAIParser):
             "image_captioning",
             "multimodal_understanding"
         ] 
+
+    def _extract_text_impl(self, file_path: Union[str, Path], **kwargs) -> tuple[str, dict]:
+        """
+        Extract text from a document using DeepSeek-VL, consistent with other parsers.
+        Args:
+            file_path: Path to the document to parse
+            **kwargs: Additional arguments for AI processing
+        Returns:
+            tuple[str, dict]: Tuple of (extracted_text, metadata)
+        """
+        # Load and preprocess the document (image or PDF as image)
+        document = self._load_document(file_path)
+        # Call the AI processor, always passing file_path as a keyword
+        ai_result = self._process_with_ai(document, file_path=str(file_path), **kwargs)
+        # Post-process the AI output
+        extracted_text = self._post_process_ai_output(ai_result)
+        # Prepare metadata
+        metadata = self._prepare_metadata(file_path, ai_result, 0.0)  # extraction_time will be set by BaseParser
+        return extracted_text, metadata 

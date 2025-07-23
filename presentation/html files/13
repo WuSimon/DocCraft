@@ -1,0 +1,153 @@
+<html lang="en"><head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .section-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #4A86E8;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+      .section-icon {
+        margin-right: 10px;
+        color: #4A86E8;
+      }
+      .lesson-box {
+        background: rgba(74, 134, 232, 0.1);
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .quote {
+        font-style: italic;
+        color: #FFFFFF;
+        border-left: 3px solid #4A86E8;
+        padding-left: 15px;
+        margin: 10px 0;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .highlight {
+        color: #4A86E8;
+        font-weight: bold;
+      }
+    </style>
+  
+</head>
+  <body style="margin: 0px; padding: 0px; overflow: hidden; min-height: 720px; min-width: 1280px; max-height: none; max-width: none; height: auto; width: auto; flex: 0 0 auto; place-self: auto; grid-area: auto; position: static; transform: none; box-sizing: border-box;">
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">Development Lessons &amp; Challenges</h1>
+      
+      <div class="content grid grid-cols-1 gap-4">
+        <div class="lesson-box">
+          <div class="section-title">
+            <i class="fas fa-lightbulb section-icon"></i>
+            <span>Key Lesson: Documentation is Critical</span>
+          </div>
+          
+          <p class="">After working with numerous packages with inconsistent documentation, one lesson stands out:</p>
+          
+          <div class="quote text-xl">
+            <i class="fas fa-file-alt mr-2"></i> You can never have enough documentation.
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 mt-2">
+            <div>
+              <p class="mb-1"><span class="highlight">Why?</span></p>
+              <ul class="list-disc pl-6">
+                <li class=""><b>Poor documentation kills productivity (and nerves)</b></li>
+              </ul>
+            </div>
+            <div>
+              <p class="mb-1"><span class="highlight">Impact:</span></p>
+              <ul class="list-disc pl-6">
+                <li class=""><span class="font-semibold">Maintenance Matters:</span> Updated documentation increases adoption</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-6">
+          <div class="lesson-box">
+            <div class="section-title">
+              <i class="fas fa-exclamation-triangle section-icon"></i>
+              <span>Integration Challenges</span>
+            </div>
+            
+            <ul class="list-disc pl-6 space-y-1">
+              <li class="">Diverse input/output formats required standardized data conversion</li>
+              <li class="">AI model dependencies increased package size significantly</li>
+              <li class="">Hardware requirements complicated benchmarking</li>
+              <li class="">Maintaining consistent error handling was difficult</li>
+            </ul>
+          </div>
+          
+          <div class="lesson-box">
+            <div class="section-title">
+              <i class="fas fa-road section-icon"></i>
+              <span class="">Future Improvements</span>
+            </div>
+            
+            <ul class="list-disc pl-6 space-y-1">
+              <li class="">Add support for more AI vision-language models</li>
+              <li class="">Implement caching mechanisms to improve speed</li>
+              <li class="">Develop a web interface for easier interaction</li>
+              <li class="">Create components for domain-specific documents</li>
+              <li class="">Improve documentation with comprehensive examples</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>13</span>
+      </div>
+    </div>
+  
+
+
+
+</body></html>

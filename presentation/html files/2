@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <style>
+      .slide-container {
+        width: 1280px;
+        min-height: 720px;
+        background: #1E1E1E;
+        color: #FFFFFF;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+      .title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #FFFFFF;
+        border-bottom: 2px solid #4A86E8;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+      .content {
+        font-size: 20px;
+        color: #FFFFFF;
+      }
+      .highlight {
+        color: #4A86E8;
+        font-weight: bold;
+      }
+      .header {
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+      .icon {
+        color: #34A853;
+        margin-right: 10px;
+      }
+      .feature-box {
+        background: rgba(74, 134, 232, 0.1);
+        border-left: 3px solid #4A86E8;
+        padding: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-container p-10">
+      <div class="header">
+        <span>Sustainable Computational Engineering 2025</span>
+      </div>
+      
+      <h1 class="title">Introduction & Purpose</h1>
+      
+      <div class="content flex flex-col space-y-8">
+        <div class="flex items-center">
+          <i class="fas fa-question-circle icon text-3xl"></i>
+          <h2 class="text-2xl font-semibold">What is DocCraft?</h2>
+        </div>
+        
+        <div class="feature-box">
+          <p class="text-xl">
+            A <span class="highlight">modular document processing toolkit</span> for document understanding and question answering, supporting multiple AI parsers and traditional OCR methods.
+          </p>
+        </div>
+        
+        <div class="mt-8 flex space-x-10">
+          <div class="flex-1">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-cogs icon"></i>
+              <span class="font-semibold">Modular Design</span>
+            </div>
+            <p>Easily extensible architecture with pluggable components</p>
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-brain icon"></i>
+              <span class="font-semibold">AI Integration</span>
+            </div>
+            <p>Supports modern vision-language models alongside traditional OCR</p>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex space-x-10">
+          <div class="flex-1">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-chart-bar icon"></i>
+              <span class="font-semibold">Benchmarking</span>
+            </div>
+            <p>Built-in evaluation tools for comparing different approaches</p>
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-terminal icon"></i>
+              <span class="font-semibold">Simple Interface</span>
+            </div>
+            <p>Consistent API and command-line tools for easy integration</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer flex justify-between w-full">
+        <span></span>
+        <span>2</span>
+      </div>
+    </div>
+  </body>
+</html>
+
