@@ -7,8 +7,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name='doccraft',
-    version='0.1.0',
+    name='doccraft-toolkit',
+    version='0.1.2',
     author='Simon Wu',
     author_email='simon.wu@rwth-aachen.de',
     description='A comprehensive document processing and question-answering toolkit',

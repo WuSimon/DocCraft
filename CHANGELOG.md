@@ -52,6 +52,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2025-01-27
+
+### Fixed
+- Fixed author and email information in package metadata
+- Updated version numbering for PyPI release
+- Improved package structure and manifest
+
+### Changed
+- Version bump from 0.1.0 to 0.1.1 for PyPI release
+
+---
+
 ## [Unreleased]
 
 ### Planned

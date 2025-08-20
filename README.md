@@ -28,6 +28,58 @@ DocCraft is a Python package for intelligent document parsing, OCR, and benchmar
 - Benchmarking against datasets like DocVQA
 - Extensible architecture for custom workflows
 
+### Project Structure
+
+```text
+DocCraft/
+  README.md
+  CHANGELOG.md
+  LICENSE
+  MANIFEST.in
+  requirements.txt
+  setup.py
+  src/
+    doccraft/
+      __init__.py
+      cli.py
+      benchmarking/
+        __init__.py
+        base_benchmarker.py
+        accuracy_benchmarker.py
+        performance_benchmarker.py
+        docvqa_benchmarker.py
+      parsers/
+        __init__.py
+        base_parser.py
+        base_ai_parser.py
+        pdf_parser.py
+        pdfplumber_parser.py
+        tesseract_parser.py
+        paddle_ocr_parser.py
+        layoutlmv3_parser.py
+        qwen_vl_parser.py
+        deepseek_vl_parser.py
+      preprocessing/
+        __init__.py
+        base_preprocessor.py
+        image_preprocessor.py
+        pdf_preprocessor.py
+      postprocessing/
+        __init__.py
+        base_postprocessor.py
+        text_postprocessor.py
+        table_postprocessor.py
+      DeepSeek-VL/
+        ...
+  docs/        (included in source distribution)
+  examples/    (not packaged)
+  tests/       (not packaged)
+```
+
+Notes:
+- The wheel contains `src/doccraft/**` and package metadata; examples and tests are excluded.
+- `docs/` are included in the source distribution (sdist); `examples/` are excluded.
+
 ---
 
 ## Installation
@@ -39,12 +91,12 @@ DocCraft is a Python package for intelligent document parsing, OCR, and benchmar
 
 ### 2. **Core Installation**
 ```bash
-pip install doccraft
+pip install doccraft-toolkit
 ```
 
 ### 3. **AI Features (LayoutLMv3, Qwen-VL, DeepSeek-VL)**
 ```bash
-pip install "doccraft[ai]"
+pip install "doccraft-toolkit[ai]"
 ```
 > This installs all dependencies for AI parsers (transformers, torch, etc).
 
@@ -59,13 +111,13 @@ cd ..  # Return to your project root
 
 ### 4. **Development Tools**
 ```bash
-pip install "doccraft[dev]"
+pip install "doccraft-toolkit[dev]"
 ```
 > Installs testing, linting, and code quality tools.
 
 ### 5. **Complete Installation (AI + Dev)**
 ```bash
-pip install "doccraft[all]"
+pip install "doccraft-toolkit[all]"
 ```
 
 ### 6. **Troubleshooting Installation**
@@ -605,7 +657,7 @@ doccraft --config my_config.json
 - [DocVQA Integration Guide](docs/DOCVQA_INTEGRATION.md)
 - [API Documentation](https://doccraft.readthedocs.io/) *(if available)*
 - [GitHub Repository](https://github.com/WuSimon/DocCraft)
-- [PyPI Project Page](https://pypi.org/project/doccraft/)
+- [PyPI Project Page](https://pypi.org/project/doccraft-toolkit/)
 - [DeepSeek-VL GitHub](https://github.com/deepseek-ai/DeepSeek-VL)
 
 ---

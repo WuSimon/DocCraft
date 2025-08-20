@@ -15,19 +15,25 @@ from .pdf_parser import PDFParser
 from .pdfplumber_parser import PDFPlumberParser
 from .tesseract_parser import TesseractParser
 from .paddle_ocr_parser import PaddleOCRParser
-from .qwen_vl_parser import QwenVLParser
+"""
+Important: Avoid importing AI parsers at module import time when optional
+dependencies (e.g., torch, transformers) are not installed. Keep all AI
+imports inside a guarded try/except so core installs work without extras.
+"""
 
 # Import AI parsers (optional dependencies)
 try:
     from .base_ai_parser import BaseAIParser
     from .layoutlmv3_parser import LayoutLMv3Parser
     from .deepseek_vl_parser import DeepSeekVLParser
+    from .qwen_vl_parser import QwenVLParser
     AI_PARSERS_AVAILABLE = True
 except ImportError:
     AI_PARSERS_AVAILABLE = False
     BaseAIParser = None
     LayoutLMv3Parser = None
     DeepSeekVLParser = None
+    QwenVLParser = None
 
 # Define what gets imported when someone does "from doccraft.parsers import *"
 __all__ = [

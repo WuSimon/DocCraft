@@ -4,9 +4,9 @@ DocCraft: Intelligent Document Processing & Benchmarking
 A Python package for unified document parsing, preprocessing, and benchmarking.
 """
 
-__version__ = "0.1.0"
-__author__ = "Simon"
-__email__ = "your.email@example.com"
+__version__ = "0.1.2"
+__author__ = "Simon Wu"
+__email__ = "simon.wu@rwth-aachen.de"
 
 # Import main components for easy access
 from .parsers import *
