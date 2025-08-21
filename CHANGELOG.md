@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Planned
+- Additional AI model integrations
+- Enhanced preprocessing options
+- More comprehensive benchmarking metrics
+- Web interface for document processing
+- Cloud deployment support
+
+---
+
 ## [0.1.2] - 2025-08-20
 
 ### Changed
@@ -24,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Repository housekeeping
 - Remove presentation assets and preparation documents from the repository.
 - Update `Roadmap.md`: published to PyPI as `doccraft-toolkit`; next focus on CI/CD and docs.
+
+---
+
+## [0.1.1] - 2025-06-20
+
+### Fixed
+- Fixed author and email information in package metadata
+- Updated version numbering for PyPI release
+- Improved package structure and manifest
+
+### Changed
+- Version bump from 0.1.0 to 0.1.1 for PyPI release
 
 ---
 
