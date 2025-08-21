@@ -4,7 +4,7 @@
 > Always use the conda environment named `doccraft` for all development and testing. Activate with:
 > `conda activate doccraft`
 > 
-> **Status Update (2025-07-13):**
+> **Status Update (2025-08-20):**
 > - ✅ **MAJOR MILESTONE ACHIEVED**: Complete modular, object-oriented architecture implemented
 > - ✅ All parsers implemented: Tesseract, PaddleOCR, PyMuPDF, PDFPlumber
 > - ✅ All preprocessors implemented: Image and PDF preprocessors
@@ -14,7 +14,8 @@
 > - ✅ **NEW**: AI Model Integration Complete - LayoutLMv3 and DeepSeek-VL parsers fully tested
 > - ✅ Comprehensive test suite with 100% pass rate
 > - ✅ Package structure optimized for distribution
-> - 🚧 **CURRENT FOCUS**: Final documentation and PyPI preparation
+> - ✅ Published to PyPI as `doccraft-toolkit` (import name remains `doccraft`)
+> - 🚧 **CURRENT FOCUS**: Documentation polish and CI/CD setup
 
 ## Package Summary
 **Purpose**: A Python package for intelligent document parsing and preprocessing, offering a unified interface for OCR, PDF extraction, AI model integration, and comprehensive benchmarking. DocCraft transforms complex document workflows into streamlined, measurable processes.
@@ -80,7 +81,7 @@
   - [x] Created `MANIFEST.in` for proper file inclusion
   - [x] Added `LICENSE` file (MIT)
   - [x] Optimized `.gitignore` for clean repository
-- [ ] Publish to PyPI via `twine` (ready to do).
+- [x] Publish to TestPyPI and PyPI via `twine` (released as `doccraft-toolkit`).
 - [ ] Add CI/CD (GitHub Actions for automated testing).
 - [ ] Document benchmarking results and best practices:
   - [ ] Create benchmark visualization tools.
@@ -196,7 +197,7 @@ DocCraft/
 3. **CI/CD Setup**: GitHub Actions for automated testing
 
 ### 🎯 **NEXT MILESTONE**
-**PyPI Publication**: The package is ready for distribution and can be published to PyPI immediately.
+**CI/CD and Docs**: Add GitHub Actions for tests and release checks; refine README/API docs and usage guides.
 
 ---
 
