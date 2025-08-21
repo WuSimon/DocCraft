@@ -275,4 +275,4 @@ src/doccraft/DeepSeek-VL/images/
 !requirements.txt
 !MANIFEST.in
 !setup.py
-!SimSun.ttf 
+!SimSun.ttf src/doccraft/DeepSeek-VL/
