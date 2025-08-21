@@ -5,7 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-01-27
+## [0.1.2] - 2025-08-20
+
+### Changed
+- Rename distribution on PyPI to `doccraft-toolkit` (Python import remains `doccraft`).
+- Update README install commands and PyPI links to use `doccraft-toolkit`.
+- Guard AI parser imports so core installs work without `[ai]` extras (no `torch` required for `import doccraft`).
+
+### Packaging
+- Exclude `examples/` from source distribution; keep `docs/` only in sdist.
+- Prune vendored `src/doccraft/DeepSeek-VL/` from sdist and repository; users install from upstream repo per README.
+- Verify artifacts with build + twine check; confirm exclusions in sdist and wheel.
+
+### Documentation
+- Add Project Structure to README; clarify what is packaged vs excluded.
+- Add TestPyPI/PyPI usage guidance; clarify DeepSeek-VL installation from source.
+
+### Repository housekeeping
+- Remove presentation assets and preparation documents from the repository.
+- Update `Roadmap.md`: published to PyPI as `doccraft-toolkit`; next focus on CI/CD and docs.
+
+---
+
+## [0.1.0] - 2025-06-08
 
 ### Added
 - Initial release of DocCraft: A comprehensive document processing and question-answering toolkit
@@ -27,10 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Python 3.8+ Support**: Compatible with modern Python versions
 
 ### Installation Options
-- **Core Installation**: `pip install doccraft` (basic document processing)
-- **AI Features**: `pip install "doccraft[ai]"` (includes AI parsers)
-- **Development Tools**: `pip install "doccraft[dev]"` (testing and development)
-- **Complete Installation**: `pip install "doccraft[all]"` (everything)
+- (Historical for 0.1.0)
+- **Core Installation**: `pip install doccraft`
+- **AI Features**: `pip install "doccraft[ai]"`
+- **Development Tools**: `pip install "doccraft[dev]"`
+- **Complete Installation**: `pip install "doccraft[all]"`
 
 ### CLI Commands
 - `doccraft --help`: Show main help
